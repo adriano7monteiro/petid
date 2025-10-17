@@ -1,9 +1,14 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
+
 let ACCESS_TOKEN = null;
 export function setAuthToken(token){ ACCESS_TOKEN = token; }
 
+// Get API URL from environment or use default
+const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://bc739a2b-2d9f-4ed8-9396-e19b2f4d3508.preview.emergentagent.com';
+
 export const api = axios.create({
-  baseURL: 'http://localhost:8001',
+  baseURL: API_URL,
   headers: {'Content-Type': 'application/json'}
 });
 
