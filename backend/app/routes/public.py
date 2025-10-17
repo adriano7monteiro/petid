@@ -59,14 +59,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   <script>
     const labels = {labels_json};
     const values = {values_json};
-    if (labels.length) {{{{
+    if (labels.length) {{
       const ctx = document.getElementById('chart').getContext('2d');
-      new Chart(ctx, {{{{
+      new Chart(ctx, {{
         type: 'line',
-        data: {{{{ labels, datasets: [{{{{ label: 'Índice (apetite+energia)', data: values, tension: 0.25 }}}}] }}}},
-        options: {{{{ plugins: {{{{ legend: {{{{ display:false }}}} }}}}, scales: {{{{ y: {{{{ suggestedMin: 0, suggestedMax: 3, ticks: {{{{ stepSize:1 }}}} }}}} }}}} }}}}
-      }}}});
-    }}}}
+        data: {{ labels: labels, datasets: [{{ label: 'Índice (apetite+energia)', data: values, tension: 0.25 }}] }},
+        options: {{ plugins: {{ legend: {{ display: false }} }}, scales: {{ y: {{ suggestedMin: 0, suggestedMax: 3, ticks: {{ stepSize: 1 }} }} }} }}
+      }});
+    }}
   </script>
 </body>
 </html>"""
