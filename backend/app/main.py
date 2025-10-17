@@ -31,4 +31,5 @@ app.include_router(pets.router, prefix="/api")
 app.include_router(diary.router, prefix="/api")
 app.include_router(upload.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
-app.include_router(public.router)
+app.include_router(public.router, prefix="/api")
+app.include_router(public.router)  # Mantém também sem /api para compatibilidade
