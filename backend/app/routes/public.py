@@ -13,19 +13,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   <title>Carteirinha PetID</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body{font-family: Arial, Helvetica, sans-serif; background:#f7fafc; color:#1f2937; margin:0}
-    .wrap{max-width:880px;margin:24px auto;padding:0 16px}
-    .card{background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,.06); padding:20px}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    .item{background:#fff;border:1px solid #eee;border-radius:12px;padding:12px}
-    .title{font-size:24px;font-weight:700;margin:0 0 8px}
-    .subtitle{color:#6b7280;margin:0 0 16px}
-    .section{font-weight:700;margin:16px 0 8px}
-    .timeline{list-style:none;padding:0;margin:0}
-    .timeline li{padding:10px 12px;border:1px solid #eee;border-radius:12px;margin-bottom:8px}
-    .badge{display:inline-block;background:#e5edff;color:#1e3a8a;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:600}
-    .btn{display:inline-block;background:#2563eb;color:#fff;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700}
-    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+    body{{font-family: Arial, Helvetica, sans-serif; background:#f7fafc; color:#1f2937; margin:0}}
+    .wrap{{max-width:880px;margin:24px auto;padding:0 16px}}
+    .card{{background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,.06); padding:20px}}
+    .grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+    .item{{background:#fff;border:1px solid #eee;border-radius:12px;padding:12px}}
+    .title{{font-size:24px;font-weight:700;margin:0 0 8px}}
+    .subtitle{{color:#6b7280;margin:0 0 16px}}
+    .section{{font-weight:700;margin:16px 0 8px}}
+    .timeline{{list-style:none;padding:0;margin:0}}
+    .timeline li{{padding:10px 12px;border:1px solid #eee;border-radius:12px;margin-bottom:8px}}
+    .badge{{display:inline-block;background:#e5edff;color:#1e3a8a;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:600}}
+    .btn{{display:inline-block;background:#2563eb;color:#fff;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700}}
+    @media (max-width:720px){{.grid{{grid-template-columns:1fr}}}}
   </style>
 </head>
 <body>
@@ -59,14 +59,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   <script>
     const labels = {labels_json};
     const values = {values_json};
-    if (labels.length) {{
+    if (labels.length) {{{{
       const ctx = document.getElementById('chart').getContext('2d');
-      new Chart(ctx, {{
+      new Chart(ctx, {{{{
         type: 'line',
-        data: {{ labels, datasets: [{{ label: 'Índice (apetite+energia)', data: values, tension: 0.25 }}] }},
-        options: {{ plugins: {{ legend: {{ display:false }} }}, scales: {{ y: {{ suggestedMin: 0, suggestedMax: 3, ticks: {{ stepSize:1 }} }} }} }}
-      }});
-    }}
+        data: {{{{ labels, datasets: [{{{{ label: 'Índice (apetite+energia)', data: values, tension: 0.25 }}}}] }}}},
+        options: {{{{ plugins: {{{{ legend: {{{{ display:false }}}} }}}}, scales: {{{{ y: {{{{ suggestedMin: 0, suggestedMax: 3, ticks: {{{{ stepSize:1 }}}} }}}} }}}} }}}}
+      }}}});
+    }}}}
   </script>
 </body>
 </html>"""
