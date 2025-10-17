@@ -11,7 +11,11 @@ export default function PetProfile({ route }){
   const [weight, setWeight] = useState('18');
   const [allergies, setAllergies] = useState('Nenhuma');
 
-  const cardUrl = useMemo(()=> `${api.defaults.baseURL.replace(/\/$/,'')}/public/pet/${petId || 'pet_demo'}`, [petId]);
+  const cardUrl = useMemo(()=> {
+    // Remove /api do final da URL base para acessar a rota pública
+    const baseUrl = api.defaults.baseURL.replace(/\/api\/?$/, '');
+    return `${baseUrl}/public/pet/${petId || 'pet_demo'}`;
+  }, [petId]);
   const onOpenCard = ()=> Linking.openURL(cardUrl);
 
   return (
