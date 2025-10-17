@@ -12,8 +12,8 @@ export default function PetProfile({ route }){
   const [allergies, setAllergies] = useState('Nenhuma');
 
   const cardUrl = useMemo(()=> {
-    // Remove /api do final da URL base para acessar a rota pública
-    const baseUrl = api.defaults.baseURL.replace(/\/api\/?$/, '');
+    // A URL já inclui /api, então basta adicionar /public/pet
+    const baseUrl = api.defaults.baseURL.replace(/\/$/, '');
     return `${baseUrl}/public/pet/${petId || 'pet_demo'}`;
   }, [petId]);
   const onOpenCard = ()=> Linking.openURL(cardUrl);
