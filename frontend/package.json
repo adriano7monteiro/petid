@@ -1,7 +1,7 @@
 {
   "name": "petid-app",
   "version": "1.0.0",
-  "main": "App.js",
+  "main": "index.js",
   "private": true,
   "scripts": {
     "start": "expo start",
