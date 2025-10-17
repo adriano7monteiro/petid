@@ -30,7 +30,16 @@ export default function LoginScreen({ navigation }){
       }
       navigation.replace('Home');
     }catch(e){
-      Alert.alert('Login falhou', e?.response?.data?.detail || 'Verifique suas credenciais e API.');
+      console.error('Login error:', e);
+      let errorMsg = 'Verifique suas credenciais e API.';
+      if (e.code === 'ECONNREFUSED' || e.code === 'ENOTFOUND') {
+        errorMsg = 'Não foi possível conectar à API. Verifique se o backend está rodando.';
+      } else if (e.response) {
+        errorMsg = e.response.data?.detail || `Erro ${e.response.status}: ${e.response.statusText}`;
+      } else if (e.message) {
+        errorMsg = e.message;
+      }
+      Alert.alert('Login falhou', errorMsg);
     }
   };
 
