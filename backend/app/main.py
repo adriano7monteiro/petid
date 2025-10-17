@@ -22,7 +22,11 @@ app.mount("/static", StaticFiles(directory=settings.UPLOAD_DIR), name="static")
 def root():
     return {"status": "ok", "name": "PetID API"}
 
-app.include_router(auth.router)
+@app.get("/api")
+def api_root():
+    return {"status": "ok", "name": "PetID API"}
+
+app.include_router(auth.router, prefix="/api")
 app.include_router(pets.router, prefix="/api")
 app.include_router(diary.router, prefix="/api")
 app.include_router(upload.router, prefix="/api")
