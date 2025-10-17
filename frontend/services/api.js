@@ -26,19 +26,19 @@ export const AuthAPI = {
 };
 
 export const PetsAPI = {
-  listMine: ()=> api.get('/api/pets'),
-  create: (payload)=> api.post('/api/pets', payload),
+  listMine: ()=> api.get('/pets'),
+  create: (payload)=> api.post('/pets', payload),
 };
 
 export const DiaryAPI = {
-  addEntry: (payload)=> api.post('/api/diary', payload),
-  getEntries: (petId)=> api.get(`/api/diary/${petId}`),
+  addEntry: (payload)=> api.post('/diary', payload),
+  getEntries: (petId)=> api.get(`/diary/${petId}`),
 };
 
 export const UploadAPI = {
   image: (fileUri)=> {
     const data = new FormData();
     data.append('file', { uri: fileUri, name: 'photo.jpg', type: 'image/jpeg' });
-    return api.post('/api/upload', data, { headers: {'Content-Type': 'multipart/form-data'} });
+    return api.post('/upload', data, { headers: {'Content-Type': 'multipart/form-data'} });
   }
 };
