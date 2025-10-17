@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import LoginScreen from './app/screens/LoginScreen';
-import Dashboard from './app/screens/Dashboard';
+import Home from './app/screens/Home';
 import PetProfile from './app/screens/PetProfile';
 import DiaryScreen from './app/screens/DiaryScreen';
 import HealthCheckScreen from './app/screens/HealthCheckScreen';
@@ -17,10 +17,10 @@ const Tab = createBottomTabNavigator();
 function Tabs() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Dashboard" component={Dashboard} />
-      <Tab.Screen name="Prontuario" component={PetProfile} />
-      <Tab.Screen name="Diario" component={DiaryScreen} />
-      <Tab.Screen name="Saude" component={HealthCheckScreen} options={{ title: "Mal-estar" }} />
+      <Tab.Screen name="Home" component={Home} options={{ title: "Início" }} />
+      <Tab.Screen name="Prontuario" component={PetProfile} options={{ title: "Prontuário" }} />
+      <Tab.Screen name="Diario" component={DiaryScreen} options={{ title: "Diário" }} />
+      <Tab.Screen name="Saude" component={HealthCheckScreen} options={{ title: "Check-up" }} />
     </Tab.Navigator>
   );
 }
