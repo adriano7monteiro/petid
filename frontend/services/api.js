@@ -1,15 +1,13 @@
 import axios from 'axios';
-import Constants from 'expo-constants';
+import { API_URL } from '../config';
 
 let ACCESS_TOKEN = null;
 export function setAuthToken(token){ ACCESS_TOKEN = token; }
 
-// Get API URL from environment or use default
-const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://bc739a2b-2d9f-4ed8-9396-e19b2f4d3508.preview.emergentagent.com';
-
 export const api = axios.create({
   baseURL: API_URL,
-  headers: {'Content-Type': 'application/json'}
+  headers: {'Content-Type': 'application/json'},
+  timeout: 10000 // 10 segundos de timeout
 });
 
 api.interceptors.request.use((config)=>{
