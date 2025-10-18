@@ -81,6 +81,7 @@ export default function Home({ navigation }){
               key={pet.id}
               pet={pet} 
               onPress={() => navigation.navigate('Prontuario', { petId: pet.id })}
+              onDelete={handleDeletePet}
             />
           ))}
         </View>
