@@ -367,6 +367,88 @@ export default function PetProfile({ route }){
         </TouchableOpacity>
       )}
 
+      {/* Cartão de Vacinação */}
+      <View style={styles.vaccineSection}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>💉 Cartão de Vacinação</Text>
+          <TouchableOpacity 
+            style={styles.btnSuggest}
+            onPress={loadVaccineSuggestions}
+            disabled={loadingVaccines}
+          >
+            {loadingVaccines ? (
+              <ActivityIndicator size="small" color="#8b5cf6" />
+            ) : (
+              <Text style={styles.btnSuggestText}>🤖 Sugerir com IA</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {vaccines.length === 0 ? (
+          <View style={styles.emptyVaccines}>
+            <Text style={styles.emptyVaccinesIcon}>💉</Text>
+            <Text style={styles.emptyVaccinesText}>
+              Nenhuma vacina registrada ainda
+            </Text>
+            <Text style={styles.emptyVaccinesSubtext}>
+              Toque em "Sugerir com IA" para receber recomendações personalizadas
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.vaccineList}>
+            {vaccines.map((vaccine) => (
+              <View key={vaccine.id} style={styles.vaccineCard}>
+                <View style={styles.vaccineHeader}>
+                  <TouchableOpacity 
+                    onPress={() => toggleVaccine(vaccine.id)}
+                    style={styles.vaccineCheckbox}
+                  >
+                    <View style={[
+                      styles.checkbox,
+                      vaccine.applied && styles.checkboxChecked
+                    ]}>
+                      {vaccine.applied && <Text style={styles.checkmark}>✓</Text>}
+                    </View>
+                  </TouchableOpacity>
+                  
+                  <View style={styles.vaccineInfo}>
+                    <Text style={[
+                      styles.vaccineName,
+                      vaccine.applied && styles.vaccineNameApplied
+                    ]}>
+                      {vaccine.name}
+                    </Text>
+                    <Text style={styles.vaccineDescription}>
+                      {vaccine.description}
+                    </Text>
+                    <View style={styles.vaccineMeta}>
+                      <Text style={styles.vaccineMetaText}>
+                        📅 {vaccine.ageRecommendation}
+                      </Text>
+                      <Text style={styles.vaccineMetaText}>
+                        🔄 {vaccine.frequency}
+                      </Text>
+                    </View>
+                    {vaccine.priority === 'essential' && (
+                      <View style={styles.essentialBadge}>
+                        <Text style={styles.essentialBadgeText}>ESSENCIAL</Text>
+                      </View>
+                    )}
+                  </View>
+                  
+                  <TouchableOpacity 
+                    onPress={() => removeVaccine(vaccine.id)}
+                    style={styles.removeButton}
+                  >
+                    <Text style={styles.removeButtonText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+
       {/* Carteirinha Digital */}
       <View style={styles.cardSection}>
         <View style={styles.sectionHeader}>
