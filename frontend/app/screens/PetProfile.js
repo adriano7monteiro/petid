@@ -728,6 +728,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 16,
   },
+  btnDelete: {
+    backgroundColor: '#ef4444',
+    marginHorizontal: 16,
+    marginTop: 12,
+  },
   btnText: { 
     color: '#fff', 
     fontWeight: '700',
@@ -735,6 +740,11 @@ const styles = StyleSheet.create({
   },
   btnTextSecondary: {
     color: '#6b7280',
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  btnTextDelete: {
+    color: '#fff',
     fontWeight: '700',
     fontSize: 15,
   },
