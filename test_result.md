@@ -144,6 +144,30 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Added AIAPI.chat() function to call /api/ai-chat endpoint with conversation history."
+  
+  - task: "Add icons to tab navigation"
+    implemented: true
+    working: true
+    file: "/app/frontend/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added Ionicons to tab navigation: home icon for Início, paw for Prontuário, book for Diário, medical for Check-up. Added styling with active/inactive colors."
+  
+  - task: "Add photo upload functionality to PetProfile"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/screens/PetProfile.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added camera and gallery photo selection functionality using expo-image-picker. Users can now take photos or select from gallery for their pet. Photo displayed as circular avatar at top of profile."
 
 metadata:
   created_by: "main_agent"
