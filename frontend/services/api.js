@@ -46,4 +46,5 @@ export const UploadAPI = {
 export const AIAPI = {
   diagnose: (healthData)=> api.post('/ai-diagnosis', healthData),
   chat: (chatData)=> api.post('/ai-chat', chatData),
+  suggestVaccines: (petData)=> api.post('/suggest-vaccines', petData),
 };
