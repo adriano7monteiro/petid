@@ -771,11 +771,17 @@ def test_vaccine_error_cases(token):
 
 def main():
     """Run all backend tests"""
-    print("🧪 Starting PetID Backend API Tests")
-    print("=" * 50)
+    print("🧪 Starting PetID Backend API Tests - Including Vaccine Persistence")
+    print("=" * 60)
     
     results = {
         'api_health': False,
+        'auth_token': False,
+        'test_pet': False,
+        'put_vaccines': False,
+        'get_pets_persistence': False,
+        'patch_vaccine_toggle': False,
+        'vaccine_error_cases': False,
         'ai_diagnosis': False, 
         'ai_chat': False,
         'ai_chat_context': False,
@@ -791,30 +797,88 @@ def main():
         print("\n❌ API is not accessible. Stopping tests.")
         return results
     
-    # Test AI diagnosis endpoint
+    # Get authentication token
+    token = get_auth_token()
+    results['auth_token'] = token is not None
+    
+    if not token:
+        print("\n❌ Could not obtain auth token. Skipping authenticated tests.")
+    else:
+        # Get or create test pet
+        pet_id = get_or_create_test_pet(token)
+        results['test_pet'] = pet_id is not None
+        
+        if pet_id:
+            # Test vaccine persistence endpoints
+            put_success, vaccines = test_put_vaccines(token, pet_id)
+            results['put_vaccines'] = put_success
+            
+            if put_success:
+                # Test persistence verification
+                persist_success, persisted_vaccines = test_get_pets_verify_persistence(token, pet_id)
+                results['get_pets_persistence'] = persist_success
+                
+                # Test vaccine toggle (use first vaccine ID)
+                if vaccines and len(vaccines) > 0:
+                    vaccine_id = vaccines[0]["id"]
+                    toggle_success = test_patch_vaccine_toggle(token, pet_id, vaccine_id)
+                    results['patch_vaccine_toggle'] = toggle_success
+            
+            # Test error cases
+            error_results = test_vaccine_error_cases(token)
+            results['vaccine_error_cases'] = all(error_results.values())
+    
+    # Test AI diagnosis endpoint (no auth required)
     diagnosis_success, diagnosis_text = test_ai_diagnosis()
     results['ai_diagnosis'] = diagnosis_success
     
-    # Test AI chat endpoint
+    # Test AI chat endpoint (no auth required)
     chat_success, chat_response = test_ai_chat(diagnosis_text)
     results['ai_chat'] = chat_success
     
-    # Test AI chat conversation context
+    # Test AI chat conversation context (no auth required)
     results['ai_chat_context'] = test_ai_chat_conversation_context()
     
-    # Test vaccine suggestion endpoints
+    # Test vaccine suggestion endpoints (no auth required)
     results['suggest_vaccines_full'] = test_suggest_vaccines_full_data()
     results['suggest_vaccines_minimal'] = test_suggest_vaccines_minimal_data()
     results['suggest_vaccines_different_species'] = test_suggest_vaccines_different_species()
     
     # Print summary
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 60)
     print("🏁 TEST SUMMARY")
-    print("=" * 50)
+    print("=" * 60)
     
-    for test_name, success in results.items():
+    # Group results by category
+    vaccine_persistence_tests = {
+        'auth_token': results['auth_token'],
+        'test_pet': results['test_pet'], 
+        'put_vaccines': results['put_vaccines'],
+        'get_pets_persistence': results['get_pets_persistence'],
+        'patch_vaccine_toggle': results['patch_vaccine_toggle'],
+        'vaccine_error_cases': results['vaccine_error_cases']
+    }
+    
+    ai_tests = {
+        'ai_diagnosis': results['ai_diagnosis'],
+        'ai_chat': results['ai_chat'], 
+        'ai_chat_context': results['ai_chat_context'],
+        'suggest_vaccines_full': results['suggest_vaccines_full'],
+        'suggest_vaccines_minimal': results['suggest_vaccines_minimal'],
+        'suggest_vaccines_different_species': results['suggest_vaccines_different_species']
+    }
+    
+    print("🔐 VACCINE PERSISTENCE TESTS:")
+    for test_name, success in vaccine_persistence_tests.items():
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{test_name.replace('_', ' ').title()}: {status}")
+        print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
+    print("\n🤖 AI ENDPOINT TESTS:")
+    for test_name, success in ai_tests.items():
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
+    print(f"\n📊 API Health: {'✅ PASS' if results['api_health'] else '❌ FAIL'}")
     
     total_tests = len(results)
     passed_tests = sum(results.values())
@@ -824,6 +888,18 @@ def main():
         print("🎉 All tests passed!")
     else:
         print("⚠️ Some tests failed - check logs above")
+        
+        # Highlight critical failures
+        critical_failures = []
+        if not results['put_vaccines']:
+            critical_failures.append("PUT vaccines endpoint")
+        if not results['patch_vaccine_toggle']:
+            critical_failures.append("PATCH vaccine toggle endpoint")
+        if not results['get_pets_persistence']:
+            critical_failures.append("Vaccine persistence verification")
+            
+        if critical_failures:
+            print(f"\n🚨 CRITICAL FAILURES: {', '.join(critical_failures)}")
     
     return results
 
