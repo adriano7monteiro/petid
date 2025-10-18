@@ -225,30 +225,33 @@ export default function PetProfile({ route }){
           <Text style={styles.sectionTitle}>📊 Características Físicas</Text>
         </View>
         
-        <View style={styles.gridRow}>
-          <View style={styles.gridItem}>
-            <Text style={styles.label}>Idade</Text>
-            <TextInput 
-              style={[styles.input, !editing && styles.inputDisabled]} 
-              value={age} 
-              onChangeText={setAge} 
-              placeholder="Anos"
-              keyboardType="numeric"
-              editable={editing}
-            />
-          </View>
-
-          <View style={styles.gridItem}>
-            <Text style={styles.label}>Peso (kg)</Text>
-            <TextInput 
-              style={[styles.input, !editing && styles.inputDisabled]} 
-              value={weight} 
-              onChangeText={setWeight} 
-              placeholder="Peso"
-              keyboardType="decimal-pad"
-              editable={editing}
-            />
-          </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Data de Nascimento</Text>
+          <TextInput 
+            style={[styles.input, !editing && styles.inputDisabled]} 
+            value={birthdate} 
+            onChangeText={setBirthdate} 
+            placeholder="AAAA-MM-DD (ex: 2020-05-15)"
+            editable={editing}
+          />
+          {age && (
+            <View style={styles.ageDisplay}>
+              <Text style={styles.ageIcon}>🎂</Text>
+              <Text style={styles.ageText}>Idade: {age}</Text>
+            </View>
+          )}
+        </View>
+        
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Peso (kg)</Text>
+          <TextInput 
+            style={[styles.input, !editing && styles.inputDisabled]} 
+            value={weight} 
+            onChangeText={setWeight} 
+            placeholder="Peso"
+            keyboardType="decimal-pad"
+            editable={editing}
+          />
         </View>
       </View>
 
