@@ -122,15 +122,18 @@ backend:
   
   - task: "Add endpoint to delete pet"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/app/routes/pets.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added DELETE /pets/{pet_id} endpoint. Verifies pet belongs to user before deletion. Returns success message after deletion."
+      - working: true
+        agent: "testing"
+        comment: "✅ DELETE PET ENDPOINT TESTED SUCCESSFULLY: All test scenarios from review request completed perfectly! 1) DELETE /pets/{pet_id} - Successfully deletes pet and returns correct response format {'success': True, 'message': 'Pet removido com sucesso'}, 2) Verification via GET /pets confirms pet is actually removed from database, 3) Error handling working correctly: 404 for non-existent pets, 401 for missing auth tokens, 404 for attempting to delete another user's pet (security verified), 4) Authentication and authorization working properly. Created comprehensive test pet 'Buddy' for deletion testing. All 4 delete pet test scenarios passed. Backend endpoint is production-ready."
   
   - task: "Create /api/suggest-vaccines endpoint for AI vaccine suggestions"
     implemented: true
