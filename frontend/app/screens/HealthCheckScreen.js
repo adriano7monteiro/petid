@@ -79,7 +79,14 @@ export default function HealthCheckScreen({ route }){
         additional_info: additionalInfoText
       });
       
-      setAiDiagnosis(response.data.diagnosis);
+      const initialDiagnosis = response.data.diagnosis;
+      setAiDiagnosis(initialDiagnosis);
+      
+      // Inicializar chat com o diagnóstico inicial
+      setChatMessages([
+        { role: 'assistant', content: initialDiagnosis }
+      ]);
+      
       setShowModal(true);
       
     } catch (error) {
