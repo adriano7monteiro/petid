@@ -5,6 +5,7 @@ import { AIAPI, PetsAPI } from '../../services/api';
 export default function HealthCheckScreen({ route }){
   const { petId } = route.params || {};
   const [answers, setAnswers] = useState({ eat:null, energy:null, vomit:null, pain:null });
+  const [additionalInfo, setAdditionalInfo] = useState('');
   const [evaluated, setEvaluated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [aiDiagnosis, setAiDiagnosis] = useState(null);
