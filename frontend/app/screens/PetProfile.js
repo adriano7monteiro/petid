@@ -123,13 +123,26 @@ export default function PetProfile({ route }){
     }
   };
 
-  const toggleVaccine = (vaccineId) => {
-    setVaccines(vaccines.map(v => 
+  const toggleVaccine = async (vaccineId) => {
+    const updatedVaccines = vaccines.map(v => 
       v.id === vaccineId ? { ...v, applied: !v.applied } : v
-    ));
+    );
+    setVaccines(updatedVaccines);
+    
+    // Salvar no banco de dados
+    if (pet?.id) {
+      try {
+        await PetsAPI.updateVaccines(pet.id, updatedVaccines);
+      } catch (error) {
+        console.error('Erro ao salvar vacina:', error);
+        Alert.alert('Erro', 'Não foi possível salvar a alteração.');
+        // Reverter mudança local em caso de erro
+        setVaccines(vaccines);
+      }
+    }
   };
 
-  const removeVaccine = (vaccineId) => {
+  const removeVaccine = async (vaccineId) => {
     Alert.alert(
       'Remover Vacina',
       'Deseja remover esta vacina da lista?',
@@ -138,7 +151,22 @@ export default function PetProfile({ route }){
         {
           text: 'Remover',
           style: 'destructive',
-          onPress: () => setVaccines(vaccines.filter(v => v.id !== vaccineId))
+          onPress: async () => {
+            const updatedVaccines = vaccines.filter(v => v.id !== vaccineId);
+            setVaccines(updatedVaccines);
+            
+            // Salvar no banco de dados
+            if (pet?.id) {
+              try {
+                await PetsAPI.updateVaccines(pet.id, updatedVaccines);
+              } catch (error) {
+                console.error('Erro ao remover vacina:', error);
+                Alert.alert('Erro', 'Não foi possível remover a vacina.');
+                // Reverter mudança
+                setVaccines(vaccines);
+              }
+            }
+          }
         }
       ]
     );
