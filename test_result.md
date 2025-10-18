@@ -222,6 +222,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Added delete pet functionality. PetCard now shows delete button (🗑️) that confirms before deletion. Home screen reloads pets list after deletion. Frontend API includes delete function. Prevents accidental deletion with confirmation alert."
+      - working: "NA"
+        agent: "main"
+        comment: "MOVED delete button to PetProfile screen. Removed delete button from PetCard for better UX. Added '🗑️ Remover Pet' button in PetProfile below edit button (only visible when not editing). Shows confirmation alert with pet name. After deletion, navigates back to Home screen. Red button (#ef4444) to indicate destructive action."
   
   - task: "Add photo upload functionality to PetProfile"
     implemented: true
