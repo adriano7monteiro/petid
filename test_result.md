@@ -216,6 +216,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Created complete multi-pet support. Added AddPetModal component for registering new pets with form validation. Updated Home screen to list all user pets with '+ Adicionar Pet' button in header. Made PetCard touchable to navigate to pet details. Updated navigation to pass petId to all screens (Prontuário, Diário, Saúde). Backend already supports multiple pets per user."
+      - working: "NA"
+        agent: "main"
+        comment: "Added delete pet functionality. PetCard now shows delete button (🗑️) that confirms before deletion. Home screen reloads pets list after deletion. Frontend API includes delete function. Prevents accidental deletion with confirmation alert."
   
   - task: "Add photo upload functionality to PetProfile"
     implemented: true
