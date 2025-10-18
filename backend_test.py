@@ -1196,6 +1196,12 @@ def main():
             critical_failures.append("PATCH vaccine toggle endpoint")
         if not results['get_pets_persistence']:
             critical_failures.append("Vaccine persistence verification")
+        if not results['delete_pet_success']:
+            critical_failures.append("DELETE pet endpoint")
+        if not results['verify_pet_deletion']:
+            critical_failures.append("Pet deletion verification")
+        if not results['delete_another_users_pet']:
+            critical_failures.append("Cross-user deletion security")
             
         if critical_failures:
             print(f"\n🚨 CRITICAL FAILURES: {', '.join(critical_failures)}")
