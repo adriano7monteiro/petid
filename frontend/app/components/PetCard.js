@@ -85,16 +85,4 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     fontWeight: '300',
   },
-  deleteButton: {
-    width: 36,
-    height: 36,
-    backgroundColor: '#fee2e2',
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  deleteIcon: {
-    fontSize: 18,
-  },
 });
