@@ -536,6 +536,11 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#1f2937',
   },
+  modalSubtitle: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginTop: 2,
+  },
   modalClose: {
     fontSize: 28,
     color: '#6b7280',
