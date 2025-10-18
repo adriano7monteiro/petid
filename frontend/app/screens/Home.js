@@ -18,6 +18,31 @@ export default function Home({ navigation }){
     }finally{ setLoading(false); }
   };
 
+  const handleDeletePet = async (petId) => {
+    const petToDelete = pets.find(p => p.id === petId);
+    Alert.alert(
+      'Remover Pet',
+      `Tem certeza que deseja remover ${petToDelete?.name}? Esta ação não pode ser desfeita.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Remover',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await PetsAPI.delete(petId);
+              Alert.alert('Sucesso', `${petToDelete?.name} foi removido.`);
+              loadPets();
+            } catch (error) {
+              console.error('Erro ao remover pet:', error);
+              Alert.alert('Erro', 'Não foi possível remover o pet.');
+            }
+          }
+        }
+      ]
+    );
+  };
+
   useEffect(()=>{ loadPets(); }, []);
 
   if(loading) {
