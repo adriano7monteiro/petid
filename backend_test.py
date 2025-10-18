@@ -1088,6 +1088,32 @@ def main():
             # Test error cases
             error_results = test_vaccine_error_cases(token)
             results['vaccine_error_cases'] = all(error_results.values())
+            
+            # Test DELETE pet endpoint
+            print("\n" + "=" * 60)
+            print("🗑️ TESTING DELETE PET ENDPOINT")
+            print("=" * 60)
+            
+            # Create a test pet specifically for deletion
+            delete_test_pet_id = create_test_pet_for_deletion(token)
+            
+            if delete_test_pet_id:
+                # Test successful deletion
+                delete_success = test_delete_pet_success(token, delete_test_pet_id)
+                results['delete_pet_success'] = delete_success
+                
+                if delete_success:
+                    # Verify deletion by checking pets list
+                    verify_success = test_verify_pet_deletion(token, delete_test_pet_id)
+                    results['verify_pet_deletion'] = verify_success
+            
+            # Test delete error cases
+            delete_error_results = test_delete_pet_error_cases(token)
+            results['delete_pet_error_cases'] = all(delete_error_results.values())
+            
+            # Test cross-user deletion security
+            cross_user_result = test_delete_another_users_pet(token)
+            results['delete_another_users_pet'] = cross_user_result
     
     # Test AI diagnosis endpoint (no auth required)
     diagnosis_success, diagnosis_text = test_ai_diagnosis()
