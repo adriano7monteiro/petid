@@ -42,3 +42,7 @@ export const UploadAPI = {
     return api.post('/upload', data, { headers: {'Content-Type': 'multipart/form-data'} });
   }
 };
+
+export const AIAPI = {
+  diagnose: (healthData)=> api.post('/ai-diagnosis', healthData),
+};
