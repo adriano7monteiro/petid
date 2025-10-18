@@ -790,7 +790,6 @@ const styles = StyleSheet.create({
   bubbleText: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#1f2937',
   },
   typingText: {
     fontSize: 13,
