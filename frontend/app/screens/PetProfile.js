@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Linking, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Linking, ScrollView, Alert, Image } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import * as ImagePicker from 'expo-image-picker';
 import { api, PetsAPI } from '../../services/api';
 
 export default function PetProfile({ route }){
