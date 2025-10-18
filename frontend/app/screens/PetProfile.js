@@ -441,11 +441,13 @@ export default function PetProfile({ route }){
           <View style={styles.emptyVaccines}>
             <Text style={styles.emptyVaccinesIcon}>💉</Text>
             <Text style={styles.emptyVaccinesText}>
-              Nenhuma vacina registrada ainda
+              {loadingVaccines ? 'Carregando sugestões...' : 'Nenhuma vacina registrada ainda'}
             </Text>
-            <Text style={styles.emptyVaccinesSubtext}>
-              Toque em "Sugerir com IA" para receber recomendações personalizadas
-            </Text>
+            {!loadingVaccines && (
+              <Text style={styles.emptyVaccinesSubtext}>
+                As vacinas serão sugeridas automaticamente com base na espécie do pet
+              </Text>
+            )}
           </View>
         ) : (
           <View style={styles.vaccineList}>
