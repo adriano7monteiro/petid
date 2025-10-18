@@ -1028,7 +1028,7 @@ def test_delete_another_users_pet(token):
 
 def main():
     """Run all backend tests"""
-    print("🧪 Starting PetID Backend API Tests - Including Vaccine Persistence")
+    print("🧪 Starting PetID Backend API Tests - Including Delete Pet Endpoint")
     print("=" * 60)
     
     results = {
@@ -1039,6 +1039,10 @@ def main():
         'get_pets_persistence': False,
         'patch_vaccine_toggle': False,
         'vaccine_error_cases': False,
+        'delete_pet_success': False,
+        'verify_pet_deletion': False,
+        'delete_pet_error_cases': False,
+        'delete_another_users_pet': False,
         'ai_diagnosis': False, 
         'ai_chat': False,
         'ai_chat_context': False,
