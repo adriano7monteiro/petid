@@ -26,6 +26,16 @@ class HealthCheckRequest(BaseModel):
     pet_species: str = "animal"
     additional_info: str = ""
 
+class ChatMessage(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+
+class ChatRequest(BaseModel):
+    pet_name: str = "seu pet"
+    pet_species: str = "animal"
+    messages: list[ChatMessage]  # Histórico da conversa
+    new_message: str  # Nova pergunta do usuário
+
 @router.post("/ai-diagnosis")
 async def ai_diagnosis(request: HealthCheckRequest):
     """
