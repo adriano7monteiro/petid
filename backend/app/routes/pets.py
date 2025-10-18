@@ -51,3 +51,70 @@ async def list_pets(token: str = Depends(oauth2_scheme)):
     async for d in cursor:
         items.append(normalize_pet(d))
     return items
+
+@router.put("/{pet_id}/vaccines")
+async def update_pet_vaccines(
+    pet_id: str, 
+    vaccines: List[VaccineData], 
+    token: str = Depends(oauth2_scheme)
+):
+    """Atualiza a lista completa de vacinas do pet"""
+    db = get_db()
+    user_id = get_user_id_from_token(token)
+    
+    # Verificar se o pet pertence ao usuário
+    pet = await db.pets.find_one({
+        "_id": ObjectId(pet_id),
+        "owner_id": ObjectId(user_id)
+    })
+    
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet não encontrado")
+    
+    # Converter para dict
+    vaccines_dict = [v.dict() for v in vaccines]
+    
+    # Atualizar vacinas
+    await db.pets.update_one(
+        {"_id": ObjectId(pet_id)},
+        {"$set": {"vaccines": vaccines_dict}}
+    )
+    
+    # Retornar pet atualizado
+    updated = await db.pets.find_one({"_id": ObjectId(pet_id)})
+    return normalize_pet(updated)
+
+@router.patch("/{pet_id}/vaccines/{vaccine_id}")
+async def toggle_vaccine_applied(
+    pet_id: str,
+    vaccine_id: str,
+    applied: bool,
+    token: str = Depends(oauth2_scheme)
+):
+    """Marca ou desmarca uma vacina específica como aplicada"""
+    db = get_db()
+    user_id = get_user_id_from_token(token)
+    
+    # Verificar se o pet pertence ao usuário
+    pet = await db.pets.find_one({
+        "_id": ObjectId(pet_id),
+        "owner_id": ObjectId(user_id)
+    })
+    
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet não encontrado")
+    
+    # Atualizar o status da vacina específica
+    vaccines = pet.get("vaccines", [])
+    for vaccine in vaccines:
+        if vaccine.get("id") == vaccine_id:
+            vaccine["applied"] = applied
+            break
+    
+    await db.pets.update_one(
+        {"_id": ObjectId(pet_id)},
+        {"$set": {"vaccines": vaccines}}
+    )
+    
+    updated = await db.pets.find_one({"_id": ObjectId(pet_id)})
+    return normalize_pet(updated)
