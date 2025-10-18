@@ -123,3 +123,26 @@ async def toggle_vaccine_applied(
     
     updated = await db.pets.find_one({"_id": ObjectId(pet_id)})
     return normalize_pet(updated)
+
+@router.delete("/{pet_id}")
+async def delete_pet(
+    pet_id: str,
+    token: str = Depends(oauth2_scheme)
+):
+    """Remove um pet do usuário"""
+    db = get_db()
+    user_id = get_user_id_from_token(token)
+    
+    # Verificar se o pet pertence ao usuário
+    pet = await db.pets.find_one({
+        "_id": ObjectId(pet_id),
+        "owner_id": ObjectId(user_id)
+    })
+    
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet não encontrado")
+    
+    # Deletar o pet
+    await db.pets.delete_one({"_id": ObjectId(pet_id)})
+    
+    return {"success": True, "message": "Pet removido com sucesso"}
