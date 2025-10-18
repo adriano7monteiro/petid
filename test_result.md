@@ -149,6 +149,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ VACCINE PERSISTENCE ENDPOINTS TESTED SUCCESSFULLY: All vaccine endpoints working perfectly! 1) PUT /pets/{pet_id}/vaccines - Successfully saves complete vaccine list with proper data structure (V10, Antirrábica vaccines tested), 2) PATCH /pets/{pet_id}/vaccines/{vaccine_id} - Successfully toggles applied status (tested both true/false), 3) GET /pets - Vaccines persist correctly in database and are returned with pet data, 4) Error handling working: 404 for non-existent pets, 401 for missing auth tokens. Authentication flow working correctly (login/register). All test scenarios from review request completed successfully."
+      - working: true
+        agent: "main"
+        comment: "FIXED: Changed PUT endpoint parameter from List[VaccineData] to List[dict] to accept flexible frontend data format. This fixes 422 error when marking vaccines as applied. Now accepts JavaScript objects with any fields without strict validation."
 
 frontend:
   - task: "Update HealthCheckScreen to display chat interface"
