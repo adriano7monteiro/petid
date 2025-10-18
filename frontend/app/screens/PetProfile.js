@@ -70,9 +70,12 @@ export default function PetProfile({ route }){
         setAllergies(currentPet.allergies || 'Nenhuma');
         setPetImage(currentPet.photo || null);
         
-        // Carregar vacinas salvas
-        if (currentPet.vaccines) {
+        // Carregar vacinas salvas ou sugerir automaticamente
+        if (currentPet.vaccines && currentPet.vaccines.length > 0) {
           setVaccines(currentPet.vaccines);
+        } else if (currentPet.species) {
+          // Se não tem vacinas salvas, sugerir automaticamente
+          await loadVaccineSuggestions(currentPet.species, currentPet.breed, currentPet.birthdate);
         }
       }
     } catch (error) {
@@ -82,18 +85,21 @@ export default function PetProfile({ route }){
     }
   };
 
-  const loadVaccineSuggestions = async () => {
-    if (!species) {
-      Alert.alert('Atenção', 'Por favor, informe a espécie do pet primeiro.');
+  const loadVaccineSuggestions = async (speciesParam, breedParam, birthdateParam) => {
+    const petSpecies = speciesParam || species;
+    const petBreed = breedParam || breed;
+    const petBirthdate = birthdateParam || birthdate;
+    
+    if (!petSpecies) {
       return;
     }
     
     setLoadingVaccines(true);
     try {
       const response = await AIAPI.suggestVaccines({
-        pet_species: species,
-        pet_breed: breed,
-        pet_age: age || ''
+        pet_species: petSpecies,
+        pet_breed: petBreed,
+        pet_age: calculateAge(petBirthdate) || ''
       });
       
       // Marcar vacinas já aplicadas
@@ -104,10 +110,14 @@ export default function PetProfile({ route }){
       }));
       
       setVaccines(suggestedVaccines);
-      Alert.alert('Sucesso', `${suggestedVaccines.length} vacinas sugeridas pela IA!`);
+      
+      // Salvar no banco de dados
+      if (pet?.id) {
+        await PetsAPI.updateVaccines(pet.id, suggestedVaccines);
+      }
+      
     } catch (error) {
       console.error('Erro ao carregar sugestões:', error);
-      Alert.alert('Erro', 'Não foi possível obter sugestões de vacinas.');
     } finally {
       setLoadingVaccines(false);
     }
