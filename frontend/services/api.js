@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL } from '../config';
+import { API_URL } from '../config.js';
 
 let ACCESS_TOKEN = null;
 export function setAuthToken(token){ ACCESS_TOKEN = token; }
