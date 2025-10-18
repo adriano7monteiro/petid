@@ -23,42 +23,62 @@ export default function Home({ navigation }){
   if(loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color="#8b5cf6" />
         <Text style={styles.loadingText}>Carregando seus pets...</Text>
       </View>
     );
   }
 
-  const pet = pets[0];
-  const petName = pet?.name || 'seu pet';
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>Olá! 👋</Text>
-        <Text style={styles.subtitle}>Bem-vindo ao PetID</Text>
+        <View>
+          <Text style={styles.greeting}>Olá! 👋</Text>
+          <Text style={styles.subtitle}>Bem-vindo ao PetID</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={() => setShowAddModal(true)}
+        >
+          <Text style={styles.addButtonText}>+ Adicionar Pet</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Pet Card */}
-      {pet ? (
+      {/* Pets List */}
+      {pets.length > 0 ? (
         <View style={styles.petSection}>
-          <Text style={styles.sectionTitle}>Meu Pet</Text>
-          <PetCard pet={{ id: pet.id, name: pet.name, species: pet.species, breed: pet.breed }} />
+          <Text style={styles.sectionTitle}>
+            Meus Pets ({pets.length})
+          </Text>
+          {pets.map(pet => (
+            <PetCard 
+              key={pet.id}
+              pet={pet} 
+              onPress={() => navigation.navigate('Prontuario', { petId: pet.id })}
+            />
+          ))}
         </View>
       ) : (
         <View style={styles.noPetCard}>
           <Text style={styles.noPetTitle}>🐾 Nenhum pet cadastrado</Text>
           <Text style={styles.noPetText}>Adicione um pet para começar a usar o PetID</Text>
-          <TouchableOpacity style={styles.addPetBtn}>
+          <TouchableOpacity 
+            style={styles.addPetBtn}
+            onPress={() => setShowAddModal(true)}
+          >
             <Text style={styles.addPetBtnText}>+ Adicionar Pet</Text>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* Quick Actions */}
-      <View style={styles.actionsSection}>
-        <Text style={styles.sectionTitle}>Acesso Rápido</Text>
+      {/* Quick Actions - Only show if there are pets */}
+      {pets.length > 0 && pets[0] && (
+        <View style={styles.actionsSection}>
+          <Text style={styles.sectionTitle}>Acesso Rápido</Text>
+          <Text style={styles.actionSubtitle}>
+            {pets.length === 1 ? `Para ${pets[0].name}` : 'Selecione um pet acima para acessar'}
+          </Text>
         
         <View style={styles.grid}>
           <TouchableOpacity 
