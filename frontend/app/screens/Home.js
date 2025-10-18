@@ -83,7 +83,7 @@ export default function Home({ navigation }){
         <View style={styles.grid}>
           <TouchableOpacity 
             style={[styles.actionCard, styles.actionCardPrimary]} 
-            onPress={()=> navigation.navigate('Prontuario', { petId: pet?.id }) }
+            onPress={()=> navigation.navigate('Prontuario', { petId: pets[0]?.id }) }
           >
             <View style={styles.actionIcon}>
               <Text style={styles.actionEmoji}>📋</Text>
@@ -94,7 +94,7 @@ export default function Home({ navigation }){
 
           <TouchableOpacity 
             style={[styles.actionCard, styles.actionCardSecondary]} 
-            onPress={()=> navigation.navigate('Diario', { petId: pet?.id }) }
+            onPress={()=> navigation.navigate('Diario', { petId: pets[0]?.id }) }
           >
             <View style={styles.actionIcon}>
               <Text style={styles.actionEmoji}>📔</Text>
@@ -105,7 +105,7 @@ export default function Home({ navigation }){
 
           <TouchableOpacity 
             style={[styles.actionCard, styles.actionCardWarning]} 
-            onPress={()=> navigation.navigate('Saude', { petId: pet?.id }) }
+            onPress={()=> navigation.navigate('Saude', { petId: pets[0]?.id }) }
           >
             <View style={styles.actionIcon}>
               <Text style={styles.actionEmoji}>🏥</Text>
@@ -115,39 +115,14 @@ export default function Home({ navigation }){
           </TouchableOpacity>
         </View>
       </View>
+      )}
 
-      {/* Stats/Info Cards */}
-      <View style={styles.statsSection}>
-        <Text style={styles.sectionTitle}>Resumo</Text>
-        
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>0</Text>
-            <Text style={styles.statLabel}>Consultas</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>0</Text>
-            <Text style={styles.statLabel}>Check-ins</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>0</Text>
-            <Text style={styles.statLabel}>Vacinas</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Tips Card */}
-      <View style={styles.tipCard}>
-        <Text style={styles.tipIcon}>💡</Text>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.tipTitle}>Dica do dia</Text>
-          <Text style={styles.tipText}>
-            Mantenha o diário de recuperação de {petName} atualizado para acompanhar sua evolução!
-          </Text>
-        </View>
-      </View>
+      {/* Add Pet Modal */}
+      <AddPetModal
+        visible={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onPetAdded={loadPets}
+      />
     </ScrollView>
   );
 }
