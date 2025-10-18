@@ -336,11 +336,19 @@ export default function HealthCheckScreen({ route }){
                     <Text style={styles.bubbleIcon}>
                       {msg.role === 'user' ? '👤' : '🤖'}
                     </Text>
-                    <Text style={styles.bubbleLabel}>
+                    <Text style={[
+                      styles.bubbleLabel,
+                      msg.role === 'user' && { color: '#fff' }
+                    ]}>
                       {msg.role === 'user' ? 'Você' : 'Assistente IA'}
                     </Text>
                   </View>
-                  <Text style={styles.bubbleText}>{msg.content}</Text>
+                  <Text style={[
+                    styles.bubbleText,
+                    msg.role === 'user' ? { color: '#fff' } : { color: '#1f2937' }
+                  ]}>
+                    {msg.content}
+                  </Text>
                 </View>
               ))}
               
