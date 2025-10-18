@@ -5,8 +5,15 @@ import os
 
 router = APIRouter()
 
-# Inicializar cliente OpenAI
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Função para obter cliente OpenAI (lazy initialization)
+def get_openai_client():
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="OPENAI_API_KEY não configurada. Configure no arquivo .env"
+        )
+    return OpenAI(api_key=api_key)
 
 class HealthCheckRequest(BaseModel):
     eating_normally: str  # "yes", "no", "maybe"
@@ -23,6 +30,9 @@ async def ai_diagnosis(request: HealthCheckRequest):
     Gera diagnóstico veterinário usando OpenAI GPT-4
     """
     try:
+        # Obter cliente OpenAI
+        client = get_openai_client()
+        
         # Construir prompt detalhado
         symptoms = []
         
