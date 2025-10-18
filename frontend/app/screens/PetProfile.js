@@ -15,9 +15,36 @@ export default function PetProfile({ route }){
   const [name, setName] = useState('');
   const [species, setSpecies] = useState('');
   const [breed, setBreed] = useState('');
-  const [age, setAge] = useState('');
+  const [birthdate, setBirthdate] = useState('');
   const [weight, setWeight] = useState('');
   const [allergies, setAllergies] = useState('');
+
+  // Calcular idade a partir da data de nascimento
+  const calculateAge = (birthdateStr) => {
+    if (!birthdateStr) return null;
+    
+    const birthDate = new Date(birthdateStr);
+    const today = new Date();
+    
+    let years = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    
+    if (years > 0) {
+      return `${years} ano${years > 1 ? 's' : ''}${months > 0 ? ` e ${months} ${months > 1 ? 'meses' : 'mês'}` : ''}`;
+    } else if (months > 0) {
+      return `${months} ${months > 1 ? 'meses' : 'mês'}`;
+    } else {
+      const days = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
+      return `${days} ${days > 1 ? 'dias' : 'dia'}`;
+    }
+  };
+
+  const age = useMemo(() => calculateAge(birthdate), [birthdate]);
 
   useEffect(() => {
     loadPetData();
