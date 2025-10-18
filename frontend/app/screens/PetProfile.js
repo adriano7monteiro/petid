@@ -37,12 +37,76 @@ export default function PetProfile({ route }){
         setAge(currentPet.age?.toString() || '');
         setWeight(currentPet.weight?.toString() || '');
         setAllergies(currentPet.allergies || 'Nenhuma');
+        setPetImage(currentPet.photo || null);
       }
     } catch (error) {
       console.error('Erro ao carregar pet:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const pickImageFromGallery = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (permissionResult.granted === false) {
+      Alert.alert('Permissão Necessária', 'É necessário permitir acesso à galeria de fotos.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setPetImage(result.assets[0].uri);
+      Alert.alert('Sucesso', 'Foto selecionada! Lembre-se de salvar as alterações.');
+    }
+  };
+
+  const takePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    
+    if (permissionResult.granted === false) {
+      Alert.alert('Permissão Necessária', 'É necessário permitir acesso à câmera.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setPetImage(result.assets[0].uri);
+      Alert.alert('Sucesso', 'Foto capturada! Lembre-se de salvar as alterações.');
+    }
+  };
+
+  const showImagePickerOptions = () => {
+    Alert.alert(
+      'Foto do Pet',
+      'Escolha uma opção',
+      [
+        {
+          text: '📷 Tirar Foto',
+          onPress: takePhoto,
+        },
+        {
+          text: '🖼️ Escolher da Galeria',
+          onPress: pickImageFromGallery,
+        },
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const cardUrl = useMemo(()=> {
