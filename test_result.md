@@ -168,6 +168,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Added camera and gallery photo selection functionality using expo-image-picker. Users can now take photos or select from gallery for their pet. Photo displayed as circular avatar at top of profile."
+      - working: "NA"
+        agent: "main"
+        comment: "Changed age field to birthdate field. Age is now automatically calculated from birthdate and displayed with years, months, or days. Birthdate format: YYYY-MM-DD. Age shown in green box with cake emoji."
 
 metadata:
   created_by: "main_agent"
