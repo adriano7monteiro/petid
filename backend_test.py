@@ -396,7 +396,10 @@ def main():
         'api_health': False,
         'ai_diagnosis': False, 
         'ai_chat': False,
-        'ai_chat_context': False
+        'ai_chat_context': False,
+        'suggest_vaccines_full': False,
+        'suggest_vaccines_minimal': False,
+        'suggest_vaccines_different_species': False
     }
     
     # Test API health first
@@ -416,6 +419,11 @@ def main():
     
     # Test AI chat conversation context
     results['ai_chat_context'] = test_ai_chat_conversation_context()
+    
+    # Test vaccine suggestion endpoints
+    results['suggest_vaccines_full'] = test_suggest_vaccines_full_data()
+    results['suggest_vaccines_minimal'] = test_suggest_vaccines_minimal_data()
+    results['suggest_vaccines_different_species'] = test_suggest_vaccines_different_species()
     
     # Print summary
     print("\n" + "=" * 50)
