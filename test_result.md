@@ -134,6 +134,18 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ TESTED SUCCESSFULLY: /api/suggest-vaccines endpoint working perfectly! Tested with full data (species, breed, age), minimal data (species only), and different species (cat vs dog). All tests passed: 1) Returns proper JSON format with success:true and vaccines array, 2) Each vaccine has required fields (name, description, ageRecommendation, frequency, priority), 3) Priority values are correctly 'essential' or 'recommended', 4) Maximum 8 vaccines returned as specified, 5) Works with minimal data (species only), 6) Returns appropriate vaccines for different species. OpenAI integration working correctly, returning properly formatted vaccine data in Portuguese."
+  
+  - task: "Add endpoints to save and update pet vaccines"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/app/routes/pets.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added PUT /pets/{pet_id}/vaccines to save complete vaccine list. Added PATCH /pets/{pet_id}/vaccines/{vaccine_id} to toggle applied status. Updated PetOut model to include vaccines array and birthdate/photo fields. Updated normalize_pet function to include new fields."
 
 frontend:
   - task: "Update HealthCheckScreen to display chat interface"
