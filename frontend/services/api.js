@@ -28,6 +28,7 @@ export const AuthAPI = {
 export const PetsAPI = {
   listMine: ()=> api.get('/pets'),
   create: (payload)=> api.post('/pets', payload),
+  delete: (petId)=> api.delete(`/pets/${petId}`),
   updateVaccines: (petId, vaccines)=> api.put(`/pets/${petId}/vaccines`, vaccines),
   toggleVaccine: (petId, vaccineId, applied)=> api.patch(`/pets/${petId}/vaccines/${vaccineId}?applied=${applied}`),
 };
