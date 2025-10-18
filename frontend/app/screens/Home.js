@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import PetCard from '../components/PetCard';
+import AddPetModal from './AddPetModal';
 import { PetsAPI } from '../../services/api';
 
 export default function Home({ navigation }){
   const [loading, setLoading] = useState(true);
   const [pets, setPets] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  useEffect(()=>{ (async ()=>{
+  const loadPets = async () => {
     try{
       const res = await PetsAPI.listMine();
       setPets(res.data || []);
     }catch(e){
       Alert.alert('Erro','Falha ao carregar pets. Verifique a API.');
     }finally{ setLoading(false); }
-  })(); }, []);
+  };
+
+  useEffect(()=>{ loadPets(); }, []);
 
   if(loading) {
     return (
