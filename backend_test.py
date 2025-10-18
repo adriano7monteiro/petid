@@ -769,6 +769,263 @@ def test_vaccine_error_cases(token):
     
     return results
 
+def create_test_pet_for_deletion(token):
+    """Create a specific test pet for deletion testing"""
+    print("\n=== Creating Test Pet for Deletion ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    # Create a test pet specifically for deletion
+    pet_data = {
+        "name": "Buddy",
+        "species": "cachorro",
+        "breed": "Labrador",
+        "age": 3,
+        "birthdate": "2021-06-10",
+        "weight": 30.0
+    }
+    
+    try:
+        response = requests.post(
+            f"{BASE_URL}/pets",
+            json=pet_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            pet = response.json()
+            pet_id = pet["id"]
+            print(f"✅ Created test pet for deletion: {pet['name']} (ID: {pet_id})")
+            return pet_id
+        else:
+            print(f"❌ Failed to create test pet for deletion: {response.status_code}")
+            print(f"Response: {response.text}")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Pet creation request failed: {e}")
+        return None
+
+def test_delete_pet_success(token, pet_id):
+    """Test successful pet deletion"""
+    print(f"\n=== Testing DELETE /pets/{pet_id} (Success Case) ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    try:
+        response = requests.delete(
+            f"{BASE_URL}/pets/{pet_id}",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ DELETE pet endpoint working!")
+            
+            # Verify response format
+            if (data.get("success") == True and 
+                data.get("message") == "Pet removido com sucesso"):
+                print("✅ Response format correct")
+                print(f"Success: {data.get('success')}")
+                print(f"Message: {data.get('message')}")
+                return True
+            else:
+                print("❌ Response format incorrect")
+                print(f"Expected: {{'success': True, 'message': 'Pet removido com sucesso'}}")
+                print(f"Got: {data}")
+                return False
+        else:
+            print(f"❌ DELETE pet failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ DELETE pet request failed: {e}")
+        return False
+
+def test_verify_pet_deletion(token, deleted_pet_id):
+    """Verify pet is actually deleted by checking GET /pets"""
+    print(f"\n=== Verifying Pet Deletion (GET /pets) ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    try:
+        response = requests.get(
+            f"{BASE_URL}/pets",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            pets = response.json()
+            
+            # Check if deleted pet is NOT in the list
+            deleted_pet_found = any(pet["id"] == deleted_pet_id for pet in pets)
+            
+            if not deleted_pet_found:
+                print("✅ Pet successfully deleted - not found in pets list")
+                print(f"Current pets count: {len(pets)}")
+                return True
+            else:
+                print("❌ Pet still exists in pets list after deletion")
+                return False
+        else:
+            print(f"❌ GET pets failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ GET pets request failed: {e}")
+        return False
+
+def test_delete_pet_error_cases(token):
+    """Test error cases for pet deletion"""
+    print("\n=== Testing DELETE Pet Error Cases ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    results = {"non_existent_pet": False, "no_auth": False}
+    
+    # Test 1: Delete non-existent pet (should return 404)
+    fake_pet_id = "507f1f77bcf86cd799439012"  # Valid ObjectId format but non-existent
+    
+    try:
+        response = requests.delete(
+            f"{BASE_URL}/pets/{fake_pet_id}",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Non-existent pet deletion - Status Code: {response.status_code}")
+        
+        if response.status_code == 404:
+            print("✅ Correctly returned 404 for non-existent pet deletion")
+            results["non_existent_pet"] = True
+        else:
+            print(f"❌ Expected 404, got {response.status_code}")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Non-existent pet deletion test failed: {e}")
+    
+    # Test 2: Delete without auth token (should return 401)
+    try:
+        response = requests.delete(
+            f"{BASE_URL}/pets/{fake_pet_id}",
+            timeout=10  # No headers (no auth)
+        )
+        
+        print(f"No auth deletion test - Status Code: {response.status_code}")
+        
+        if response.status_code == 401:
+            print("✅ Correctly returned 401 for missing auth token")
+            results["no_auth"] = True
+        else:
+            print(f"❌ Expected 401, got {response.status_code}")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ No auth deletion test failed: {e}")
+    
+    return results
+
+def test_delete_another_users_pet(token):
+    """Test attempting to delete another user's pet (should return 404)"""
+    print("\n=== Testing Delete Another User's Pet ===")
+    
+    # For this test, we'll create a second user and try to delete their pet
+    # First, create second user
+    register_data = {
+        "email": "test2@petid.com",
+        "password": "testpass456"
+    }
+    
+    try:
+        # Register second user
+        register_response = requests.post(
+            f"{BASE_URL}/auth/register",
+            json=register_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        if register_response.status_code == 200:
+            print("✅ Second test user created")
+        elif register_response.status_code == 400:
+            print("⚠️ Second test user already exists, continuing...")
+        else:
+            print(f"❌ Failed to create second user: {register_response.status_code}")
+            return False
+        
+        # Login as second user
+        login_data = {
+            "username": "test2@petid.com",
+            "password": "testpass456"
+        }
+        
+        login_response = requests.post(
+            f"{BASE_URL}/auth/login",
+            data=login_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=10
+        )
+        
+        if login_response.status_code != 200:
+            print(f"❌ Failed to login as second user: {login_response.status_code}")
+            return False
+        
+        second_user_token = login_response.json().get("access_token")
+        second_user_headers = {"Authorization": f"Bearer {second_user_token}"}
+        
+        # Create pet as second user
+        pet_data = {
+            "name": "Max",
+            "species": "gato",
+            "breed": "Siamês",
+            "age": 1,
+            "weight": 4.5
+        }
+        
+        pet_response = requests.post(
+            f"{BASE_URL}/pets",
+            json=pet_data,
+            headers=second_user_headers,
+            timeout=10
+        )
+        
+        if pet_response.status_code != 200:
+            print(f"❌ Failed to create pet as second user: {pet_response.status_code}")
+            return False
+        
+        second_user_pet_id = pet_response.json()["id"]
+        print(f"✅ Created pet as second user: {second_user_pet_id}")
+        
+        # Now try to delete second user's pet using first user's token
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        delete_response = requests.delete(
+            f"{BASE_URL}/pets/{second_user_pet_id}",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Cross-user deletion attempt - Status Code: {delete_response.status_code}")
+        
+        if delete_response.status_code == 404:
+            print("✅ Correctly returned 404 when trying to delete another user's pet")
+            return True
+        else:
+            print(f"❌ Expected 404, got {delete_response.status_code}")
+            print("This is a security issue - users can delete other users' pets!")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Cross-user deletion test failed: {e}")
+        return False
+
 def main():
     """Run all backend tests"""
     print("🧪 Starting PetID Backend API Tests - Including Vaccine Persistence")
