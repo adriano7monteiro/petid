@@ -137,15 +137,18 @@ backend:
   
   - task: "Add endpoints to save and update pet vaccines"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/app/routes/pets.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added PUT /pets/{pet_id}/vaccines to save complete vaccine list. Added PATCH /pets/{pet_id}/vaccines/{vaccine_id} to toggle applied status. Updated PetOut model to include vaccines array and birthdate/photo fields. Updated normalize_pet function to include new fields."
+      - working: true
+        agent: "testing"
+        comment: "✅ VACCINE PERSISTENCE ENDPOINTS TESTED SUCCESSFULLY: All vaccine endpoints working perfectly! 1) PUT /pets/{pet_id}/vaccines - Successfully saves complete vaccine list with proper data structure (V10, Antirrábica vaccines tested), 2) PATCH /pets/{pet_id}/vaccines/{vaccine_id} - Successfully toggles applied status (tested both true/false), 3) GET /pets - Vaccines persist correctly in database and are returned with pet data, 4) Error handling working: 404 for non-existent pets, 401 for missing auth tokens. Authentication flow working correctly (login/register). All test scenarios from review request completed successfully."
 
 frontend:
   - task: "Update HealthCheckScreen to display chat interface"
