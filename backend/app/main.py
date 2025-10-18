@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.config import get_settings
-from app.routes import auth, pets, diary, upload, reports, public
+from app.routes import auth, pets, diary, upload, reports, public, ai
 
 settings = get_settings()
 app = FastAPI(title="PetID API", version="1.0.0")
