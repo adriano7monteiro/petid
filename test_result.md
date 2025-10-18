@@ -183,6 +183,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Changed age field to birthdate field. Age is now automatically calculated from birthdate and displayed with years, months, or days. Birthdate format: YYYY-MM-DD. Age shown in green box with cake emoji."
+      - working: "NA"
+        agent: "main"
+        comment: "Added AI-powered vaccine suggestions. Users can request vaccine recommendations based on pet's species, breed, and age. Can mark vaccines as applied, remove vaccines from list. Shows vaccine details, age recommendations, frequency, and priority badges for essential vaccines."
 
 metadata:
   created_by: "main_agent"
