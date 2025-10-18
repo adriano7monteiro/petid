@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Linking, ScrollView, Alert, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Linking, ScrollView, Alert, Image, ActivityIndicator } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import * as ImagePicker from 'expo-image-picker';
-import { api, PetsAPI } from '../../services/api';
+import { api, PetsAPI, AIAPI } from '../../services/api';
 
 export default function PetProfile({ route }){
   const { petId } = route.params || {};
@@ -10,6 +10,10 @@ export default function PetProfile({ route }){
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [petImage, setPetImage] = useState(null);
+  
+  // Vacinas
+  const [vaccines, setVaccines] = useState([]);
+  const [loadingVaccines, setLoadingVaccines] = useState(false);
   
   // Campos editáveis
   const [name, setName] = useState('');
