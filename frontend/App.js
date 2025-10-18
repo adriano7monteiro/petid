@@ -63,14 +63,14 @@ export default function App() {
   const [initialRoute, setInitialRoute] = useState('Login');
   useEffect(()=>{ (async ()=>{
     const token = await getToken();
-    if (token){ setAuthToken(token); setInitialRoute('Home'); } else { setInitialRoute('Login'); }
+    if (token){ setAuthToken(token); setInitialRoute('MainApp'); } else { setInitialRoute('Login'); }
   })(); }, []);
   return (
     <NavigationContainer>
       <StatusBar style="dark" />
       <Stack.Navigator initialRouteName={initialRoute}>
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Home" component={Tabs} options={{ headerShown: false }} />
+        <Stack.Screen name="MainApp" component={Tabs} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
