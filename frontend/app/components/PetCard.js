@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function PetCard({ pet, onPress }){
+export default function PetCard({ pet, onPress, onDelete }){
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <Image 
@@ -17,6 +17,17 @@ export default function PetCard({ pet, onPress }){
           </View>
         )}
       </View>
+      {onDelete && (
+        <TouchableOpacity 
+          style={styles.deleteButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            onDelete(pet.id);
+          }}
+        >
+          <Text style={styles.deleteIcon}>🗑️</Text>
+        </TouchableOpacity>
+      )}
       <View style={styles.arrow}>
         <Text style={styles.arrowText}>›</Text>
       </View>
