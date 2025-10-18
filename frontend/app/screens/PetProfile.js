@@ -9,6 +9,7 @@ export default function PetProfile({ route }){
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [petImage, setPetImage] = useState(null);
   
   // Campos editáveis
   const [name, setName] = useState('');
