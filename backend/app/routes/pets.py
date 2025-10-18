@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from bson import ObjectId
 from typing import List
-from app.models.schemas import PetIn, PetOut
+from app.models.schemas import PetIn, PetOut, VaccineData
 from app.core.db import get_db
 from app.core.config import get_settings
 
