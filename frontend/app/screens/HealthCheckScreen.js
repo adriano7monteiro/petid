@@ -184,6 +184,32 @@ export default function HealthCheckScreen({ route }){
         />
       </View>
 
+      {/* Campo de informações adicionais */}
+      <View style={styles.additionalSection}>
+        <View style={styles.additionalHeader}>
+          <Text style={styles.additionalTitle}>💬 Informações Adicionais (Opcional)</Text>
+          <View style={styles.optionalBadge}>
+            <Text style={styles.optionalText}>Opcional</Text>
+          </View>
+        </View>
+        <Text style={styles.additionalDescription}>
+          Descreva qualquer outro sintoma, comportamento ou informação que possa ajudar no diagnóstico
+        </Text>
+        <TextInput
+          style={styles.additionalInput}
+          placeholder="Ex: Está bebendo mais água que o normal, teve febre ontem, está tossindo..."
+          value={additionalInfo}
+          onChangeText={setAdditionalInfo}
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+          maxLength={500}
+        />
+        <Text style={styles.characterCount}>
+          {additionalInfo.length}/500 caracteres
+        </Text>
+      </View>
+
       {/* Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
