@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 import LoginScreen from './app/screens/LoginScreen';
 import Home from './app/screens/Home';
 import PetProfile from './app/screens/PetProfile';
@@ -16,7 +17,40 @@ const Tab = createBottomTabNavigator();
 
 function Tabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator 
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Prontuario') {
+            iconName = focused ? 'paw' : 'paw-outline';
+          } else if (route.name === 'Diario') {
+            iconName = focused ? 'book' : 'book-outline';
+          } else if (route.name === 'Saude') {
+            iconName = focused ? 'medical' : 'medical-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#8b5cf6',
+        tabBarInactiveTintColor: '#9ca3af',
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          borderTopWidth: 1,
+          borderTopColor: '#e5e7eb',
+          paddingBottom: 5,
+          paddingTop: 5,
+          height: 60,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
+      })}
+    >
       <Tab.Screen name="Home" component={Home} options={{ title: "Início" }} />
       <Tab.Screen name="Prontuario" component={PetProfile} options={{ title: "Prontuário" }} />
       <Tab.Screen name="Diario" component={DiaryScreen} options={{ title: "Diário" }} />
