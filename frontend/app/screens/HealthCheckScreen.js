@@ -12,6 +12,11 @@ export default function HealthCheckScreen({ route }){
   const [showModal, setShowModal] = useState(false);
   const [pet, setPet] = useState(null);
   
+  // Chat states
+  const [chatMessages, setChatMessages] = useState([]);
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+  
   useEffect(() => {
     loadPetData();
   }, [petId]);
