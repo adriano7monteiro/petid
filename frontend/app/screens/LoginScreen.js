@@ -46,7 +46,7 @@ export default function LoginScreen({ navigation }){
       if(!list || list.length === 0){
         await PetsAPI.create({ name:'Thor', species:'Cão', breed:'SRD', age:4, weight:18 });
       }
-      navigation.replace('Home');
+      navigation.replace('MainApp');
     }catch(e){
       console.error('Login error:', e);
       let errorMsg = 'Verifique suas credenciais e API.';
