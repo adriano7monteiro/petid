@@ -55,7 +55,7 @@ async def list_pets(token: str = Depends(oauth2_scheme)):
 @router.put("/{pet_id}/vaccines")
 async def update_pet_vaccines(
     pet_id: str, 
-    vaccines: List[VaccineData], 
+    vaccines: List[dict], 
     token: str = Depends(oauth2_scheme)
 ):
     """Atualiza a lista completa de vacinas do pet"""
@@ -71,13 +71,10 @@ async def update_pet_vaccines(
     if not pet:
         raise HTTPException(status_code=404, detail="Pet não encontrado")
     
-    # Converter para dict
-    vaccines_dict = [v.dict() for v in vaccines]
-    
-    # Atualizar vacinas
+    # Atualizar vacinas (já em formato dict)
     await db.pets.update_one(
         {"_id": ObjectId(pet_id)},
-        {"$set": {"vaccines": vaccines_dict}}
+        {"$set": {"vaccines": vaccines}}
     )
     
     # Retornar pet atualizado
