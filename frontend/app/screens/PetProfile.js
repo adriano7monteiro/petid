@@ -405,6 +405,39 @@ export default function PetProfile({ route }){
         </TouchableOpacity>
       )}
 
+      {/* Botão Remover Pet */}
+      {!editing && (
+        <TouchableOpacity 
+          style={[styles.btn, styles.btnDelete]} 
+          onPress={() => {
+            Alert.alert(
+              'Remover Pet',
+              `Tem certeza que deseja remover ${name}? Esta ação não pode ser desfeita e todos os dados serão perdidos.`,
+              [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                  text: 'Remover',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await PetsAPI.delete(pet.id);
+                      Alert.alert('Sucesso', `${name} foi removido.`, [
+                        { text: 'OK', onPress: () => navigation.navigate('Home') }
+                      ]);
+                    } catch (error) {
+                      console.error('Erro ao remover pet:', error);
+                      Alert.alert('Erro', 'Não foi possível remover o pet.');
+                    }
+                  }
+                }
+              ]
+            );
+          }}
+        >
+          <Text style={styles.btnTextDelete}>🗑️ Remover Pet</Text>
+        </TouchableOpacity>
+      )}
+
       {/* Cartão de Vacinação */}
       <View style={styles.vaccineSection}>
         <View style={styles.sectionHeader}>
