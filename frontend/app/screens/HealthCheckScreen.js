@@ -301,7 +301,7 @@ export default function HealthCheckScreen({ route }){
         </View>
       </View>
 
-      {/* Modal de Diagnóstico */}
+      {/* Modal de Chat de Diagnóstico */}
       <Modal
         visible={showModal}
         animationType="slide"
@@ -311,25 +311,90 @@ export default function HealthCheckScreen({ route }){
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <View>
-                <Text style={styles.modalTitle}>🤖 Diagnóstico para {pet?.name || 'seu pet'}</Text>
-                <Text style={styles.modalSubtitle}>Análise personalizada com IA</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.modalTitle}>💬 Chat com Assistente IA</Text>
+                <Text style={styles.modalSubtitle}>Diagnóstico para {pet?.name || 'seu pet'}</Text>
               </View>
               <TouchableOpacity onPress={() => setShowModal(false)}>
                 <Text style={styles.modalClose}>✕</Text>
               </TouchableOpacity>
             </View>
             
-            <ScrollView style={styles.modalBody}>
-              <Text style={styles.diagnosisText}>{aiDiagnosis}</Text>
+            <ScrollView 
+              style={styles.chatContainer}
+              contentContainerStyle={styles.chatContentContainer}
+            >
+              {chatMessages.map((msg, index) => (
+                <View 
+                  key={index} 
+                  style={[
+                    styles.chatBubble,
+                    msg.role === 'user' ? styles.userBubble : styles.aiBubble
+                  ]}
+                >
+                  <View style={styles.bubbleHeader}>
+                    <Text style={styles.bubbleIcon}>
+                      {msg.role === 'user' ? '👤' : '🤖'}
+                    </Text>
+                    <Text style={styles.bubbleLabel}>
+                      {msg.role === 'user' ? 'Você' : 'Assistente IA'}
+                    </Text>
+                  </View>
+                  <Text style={styles.bubbleText}>{msg.content}</Text>
+                </View>
+              ))}
+              
+              {sendingMessage && (
+                <View style={[styles.chatBubble, styles.aiBubble]}>
+                  <View style={styles.bubbleHeader}>
+                    <Text style={styles.bubbleIcon}>🤖</Text>
+                    <Text style={styles.bubbleLabel}>Assistente IA</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <ActivityIndicator size="small" color="#8b5cf6" />
+                    <Text style={styles.typingText}>Pensando...</Text>
+                  </View>
+                </View>
+              )}
             </ScrollView>
+            
+            <View style={styles.chatInputContainer}>
+              <TextInput
+                style={styles.chatInput}
+                placeholder="Faça uma pergunta sobre o diagnóstico..."
+                value={followUpQuestion}
+                onChangeText={setFollowUpQuestion}
+                multiline
+                maxLength={300}
+                editable={!sendingMessage}
+              />
+              <TouchableOpacity 
+                style={[
+                  styles.sendButton,
+                  (!followUpQuestion.trim() || sendingMessage) && styles.sendButtonDisabled
+                ]}
+                onPress={sendFollowUpQuestion}
+                disabled={!followUpQuestion.trim() || sendingMessage}
+              >
+                <Text style={styles.sendButtonText}>➤</Text>
+              </TouchableOpacity>
+            </View>
             
             <View style={styles.modalFooter}>
               <TouchableOpacity 
-                style={styles.modalButton} 
+                style={styles.newDiagnosisButton} 
+                onPress={() => {
+                  setShowModal(false);
+                  reset();
+                }}
+              >
+                <Text style={styles.newDiagnosisButtonText}>🔄 Nova Avaliação</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.closeButton} 
                 onPress={() => setShowModal(false)}
               >
-                <Text style={styles.modalButtonText}>Entendi</Text>
+                <Text style={styles.closeButtonText}>Fechar</Text>
               </TouchableOpacity>
             </View>
           </View>
