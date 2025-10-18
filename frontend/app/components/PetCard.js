@@ -1,16 +1,16 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function PetCard({ pet }){
+export default function PetCard({ pet, onPress }){
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       <Image 
-        source={{ uri: pet.photo || 'https://placekitten.com/200/200' }} 
+        source={{ uri: pet.photo || 'https://via.placeholder.com/200?text=🐾' }} 
         style={styles.img} 
       />
       <View style={styles.info}>
         <Text style={styles.name}>{pet.name}</Text>
-        <Text style={styles.meta}>{pet.species} • {pet.breed || 'Sem raça definida'}</Text>
+        <Text style={styles.meta}>{pet.species} • {pet.breed || 'SRD'}</Text>
         {pet.age && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{pet.age} {pet.age === 1 ? 'ano' : 'anos'}</Text>
@@ -20,7 +20,7 @@ export default function PetCard({ pet }){
       <View style={styles.arrow}>
         <Text style={styles.arrowText}>›</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
