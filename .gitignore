@@ -125,3 +125,7 @@ android-sdk/
 # Environment files
 *.env
 *.env.*
+
+# Environment files with secrets
+.env
+**/.env
