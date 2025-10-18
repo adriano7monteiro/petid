@@ -439,6 +439,25 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginBottom: 6,
   },
+  ageDisplay: {
+    marginTop: 8,
+    backgroundColor: '#f0fdf4',
+    borderRadius: 8,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  ageIcon: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  ageText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#15803d',
+  },
   input: { 
     backgroundColor: '#f9fafb', 
     padding: 12, 
