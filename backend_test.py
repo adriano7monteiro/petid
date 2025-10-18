@@ -1146,6 +1146,13 @@ def main():
         'vaccine_error_cases': results['vaccine_error_cases']
     }
     
+    delete_pet_tests = {
+        'delete_pet_success': results['delete_pet_success'],
+        'verify_pet_deletion': results['verify_pet_deletion'],
+        'delete_pet_error_cases': results['delete_pet_error_cases'],
+        'delete_another_users_pet': results['delete_another_users_pet']
+    }
+    
     ai_tests = {
         'ai_diagnosis': results['ai_diagnosis'],
         'ai_chat': results['ai_chat'], 
