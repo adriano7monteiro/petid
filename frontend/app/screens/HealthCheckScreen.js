@@ -50,12 +50,17 @@ export default function HealthCheckScreen({ route }){
       const petAge = pet?.age || '';
       
       // Criar informações adicionais sobre o pet
-      let additionalInfo = '';
-      if (petBreed) additionalInfo += `Raça: ${petBreed}. `;
-      if (petAge) additionalInfo += `Idade: ${petAge} anos. `;
-      if (pet?.weight) additionalInfo += `Peso: ${pet.weight}kg. `;
+      let additionalInfoText = '';
+      if (petBreed) additionalInfoText += `Raça: ${petBreed}. `;
+      if (petAge) additionalInfoText += `Idade: ${petAge} anos. `;
+      if (pet?.weight) additionalInfoText += `Peso: ${pet.weight}kg. `;
       if (pet?.allergies && pet.allergies !== 'Nenhuma') {
-        additionalInfo += `Alergias conhecidas: ${pet.allergies}. `;
+        additionalInfoText += `Alergias conhecidas: ${pet.allergies}. `;
+      }
+      
+      // Adicionar informações extras do usuário
+      if (additionalInfo && additionalInfo.trim()) {
+        additionalInfoText += `Observações do tutor: ${additionalInfo.trim()}`;
       }
       
       // Chamar IA para diagnóstico com dados personalizados do pet
@@ -66,7 +71,7 @@ export default function HealthCheckScreen({ route }){
         pain_signs: answers.pain,
         pet_name: petName,
         pet_species: petSpecies,
-        additional_info: additionalInfo
+        additional_info: additionalInfoText
       });
       
       setAiDiagnosis(response.data.diagnosis);
