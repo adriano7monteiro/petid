@@ -69,12 +69,69 @@ export default function PetProfile({ route }){
         setWeight(currentPet.weight?.toString() || '');
         setAllergies(currentPet.allergies || 'Nenhuma');
         setPetImage(currentPet.photo || null);
+        
+        // Carregar vacinas salvas
+        if (currentPet.vaccines) {
+          setVaccines(currentPet.vaccines);
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar pet:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadVaccineSuggestions = async () => {
+    if (!species) {
+      Alert.alert('Atenção', 'Por favor, informe a espécie do pet primeiro.');
+      return;
+    }
+    
+    setLoadingVaccines(true);
+    try {
+      const response = await AIAPI.suggestVaccines({
+        pet_species: species,
+        pet_breed: breed,
+        pet_age: age || ''
+      });
+      
+      // Marcar vacinas já aplicadas
+      const suggestedVaccines = response.data.vaccines.map(vaccine => ({
+        ...vaccine,
+        applied: false,
+        id: Date.now() + Math.random()
+      }));
+      
+      setVaccines(suggestedVaccines);
+      Alert.alert('Sucesso', `${suggestedVaccines.length} vacinas sugeridas pela IA!`);
+    } catch (error) {
+      console.error('Erro ao carregar sugestões:', error);
+      Alert.alert('Erro', 'Não foi possível obter sugestões de vacinas.');
+    } finally {
+      setLoadingVaccines(false);
+    }
+  };
+
+  const toggleVaccine = (vaccineId) => {
+    setVaccines(vaccines.map(v => 
+      v.id === vaccineId ? { ...v, applied: !v.applied } : v
+    ));
+  };
+
+  const removeVaccine = (vaccineId) => {
+    Alert.alert(
+      'Remover Vacina',
+      'Deseja remover esta vacina da lista?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Remover',
+          style: 'destructive',
+          onPress: () => setVaccines(vaccines.filter(v => v.id !== vaccineId))
+        }
+      ]
+    );
   };
 
   const pickImageFromGallery = async () => {
