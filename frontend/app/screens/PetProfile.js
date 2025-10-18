@@ -411,13 +411,28 @@ export default function PetProfile({ route }){
           <Text style={styles.sectionTitle}>💉 Cartão de Vacinação</Text>
           <TouchableOpacity 
             style={styles.btnSuggest}
-            onPress={loadVaccineSuggestions}
+            onPress={() => {
+              if (vaccines.length > 0) {
+                Alert.alert(
+                  'Novas Sugestões',
+                  'Isso irá substituir as vacinas atuais por novas sugestões. Deseja continuar?',
+                  [
+                    { text: 'Cancelar', style: 'cancel' },
+                    { text: 'Continuar', onPress: () => loadVaccineSuggestions() }
+                  ]
+                );
+              } else {
+                loadVaccineSuggestions();
+              }
+            }}
             disabled={loadingVaccines}
           >
             {loadingVaccines ? (
               <ActivityIndicator size="small" color="#8b5cf6" />
             ) : (
-              <Text style={styles.btnSuggestText}>🤖 Sugerir com IA</Text>
+              <Text style={styles.btnSuggestText}>
+                {vaccines.length > 0 ? '🔄 Novas Sugestões' : '🤖 Sugerir com IA'}
+              </Text>
             )}
           </TouchableOpacity>
         </View>
