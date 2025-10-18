@@ -61,7 +61,7 @@ export default function PetProfile({ route }){
         setName(currentPet.name || '');
         setSpecies(currentPet.species || '');
         setBreed(currentPet.breed || '');
-        setAge(currentPet.age?.toString() || '');
+        setBirthdate(currentPet.birthdate || '');
         setWeight(currentPet.weight?.toString() || '');
         setAllergies(currentPet.allergies || 'Nenhuma');
         setPetImage(currentPet.photo || null);
