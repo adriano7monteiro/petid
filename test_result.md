@@ -152,6 +152,9 @@ backend:
       - working: true
         agent: "main"
         comment: "FIXED: Changed PUT endpoint parameter from List[VaccineData] to List[dict] to accept flexible frontend data format. This fixes 422 error when marking vaccines as applied. Now accepts JavaScript objects with any fields without strict validation."
+      - working: true
+        agent: "main"
+        comment: "FIXED: GET /api/pets returning 500 error due to vaccine id type mismatch. Updated normalize_pet function to convert vaccine IDs to strings before returning. Frontend generates numeric IDs (Date.now() + Math.random()) but Pydantic VaccineData expects string. Now normalizes all vaccine IDs to strings during response serialization."
 
 frontend:
   - task: "Update HealthCheckScreen to display chat interface"
