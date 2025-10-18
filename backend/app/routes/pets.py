@@ -25,9 +25,12 @@ def normalize_pet(doc) -> PetOut:
         "species": doc["species"],
         "breed": doc.get("breed"),
         "age": doc.get("age"),
+        "birthdate": doc.get("birthdate"),
         "weight": doc.get("weight"),
         "allergies": doc.get("allergies"),
+        "photo": doc.get("photo"),
         "owner_id": str(doc["owner_id"]),
+        "vaccines": doc.get("vaccines", []),
     }
 
 @router.post("", response_model=PetOut)
