@@ -114,3 +114,56 @@ Seja claro, objetivo e empático. Sempre lembre que este é um guia inicial e n�
             status_code=500,
             detail=f"Erro ao gerar diagnóstico: {str(e)}"
         )
+
+
+@router.post("/ai-chat")
+async def ai_chat(request: ChatRequest):
+    """
+    Endpoint de chat interativo para diagnóstico veterinário.
+    Mantém contexto da conversa e permite perguntas de follow-up.
+    """
+    try:
+        # Obter cliente OpenAI
+        client = get_openai_client()
+        
+        # Construir mensagens para o modelo
+        messages = [
+            {
+                "role": "system",
+                "content": f"Você é um assistente veterinário virtual especializado que está ajudando o tutor de {request.pet_name}, um(a) {request.pet_species}. Seja claro, empático e sempre recomende cuidado veterinário presencial quando apropriado. Responda de forma concisa e objetiva."
+            }
+        ]
+        
+        # Adicionar histórico de conversa
+        for msg in request.messages:
+            messages.append({
+                "role": msg.role,
+                "content": msg.content
+            })
+        
+        # Adicionar nova mensagem do usuário
+        messages.append({
+            "role": "user",
+            "content": request.new_message
+        })
+        
+        # Chamar OpenAI
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            temperature=0.7,
+            max_tokens=600
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        return {
+            "success": True,
+            "response": ai_response
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao processar chat: {str(e)}"
+        )
