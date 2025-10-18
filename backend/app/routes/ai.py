@@ -172,3 +172,76 @@ async def ai_chat(request: ChatRequest):
             status_code=500,
             detail=f"Erro ao processar chat: {str(e)}"
         )
+
+
+@router.post("/suggest-vaccines")
+async def suggest_vaccines(request: VaccineRequest):
+    """
+    Sugere vacinas recomendadas baseado na espécie, raça e idade do pet usando IA.
+    """
+    try:
+        client = get_openai_client()
+        
+        # Construir prompt para sugestão de vacinas
+        prompt = f"""Como veterinário especializado, liste as vacinas essenciais e recomendadas para um {request.pet_species}"""
+        
+        if request.pet_breed:
+            prompt += f" da raça {request.pet_breed}"
+        
+        if request.pet_age:
+            prompt += f" com {request.pet_age} de idade"
+        
+        prompt += """.
+
+Por favor, retorne uma lista de vacinas no seguinte formato JSON (sem explicações adicionais):
+[
+  {
+    "name": "Nome da Vacina",
+    "description": "Breve descrição (máx 80 caracteres)",
+    "ageRecommendation": "Idade recomendada",
+    "frequency": "Frequência (ex: anual, única dose, etc)",
+    "priority": "essential" ou "recommended"
+  }
+]
+
+Inclua apenas as vacinas mais importantes (máximo 8 vacinas). Seja conciso nas descrições."""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Você é um veterinário especializado que fornece recomendações precisas de vacinas. Retorne APENAS o JSON solicitado, sem texto adicional."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.5,
+            max_tokens=1000
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        # Tentar extrair JSON da resposta
+        import json
+        import re
+        
+        # Remover possíveis code blocks
+        json_match = re.search(r'\[.*\]', ai_response, re.DOTALL)
+        if json_match:
+            vaccines_data = json.loads(json_match.group())
+        else:
+            vaccines_data = json.loads(ai_response)
+        
+        return {
+            "success": True,
+            "vaccines": vaccines_data
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao sugerir vacinas: {str(e)}"
+        )
