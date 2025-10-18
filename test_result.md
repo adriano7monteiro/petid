@@ -193,6 +193,18 @@ frontend:
         agent: "main"
         comment: "Added Ionicons to tab navigation: home icon for Início, paw for Prontuário, book for Diário, medical for Check-up. Added styling with active/inactive colors."
   
+  - task: "Create multi-pet support structure"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/app/screens/Home.js, /app/frontend/app/screens/AddPetModal.js, /app/frontend/app/components/PetCard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created complete multi-pet support. Added AddPetModal component for registering new pets with form validation. Updated Home screen to list all user pets with '+ Adicionar Pet' button in header. Made PetCard touchable to navigate to pet details. Updated navigation to pass petId to all screens (Prontuário, Diário, Saúde). Backend already supports multiple pets per user."
+  
   - task: "Add photo upload functionality to PetProfile"
     implemented: true
     working: "NA"
