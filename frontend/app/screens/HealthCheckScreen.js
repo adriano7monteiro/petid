@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator, Modal } from 'react-native';
-import { AIAPI } from '../../services/api';
+import { AIAPI, PetsAPI } from '../../services/api';
 
 export default function HealthCheckScreen({ route }){
   const { petId } = route.params || {};
@@ -9,6 +9,22 @@ export default function HealthCheckScreen({ route }){
   const [loading, setLoading] = useState(false);
   const [aiDiagnosis, setAiDiagnosis] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [pet, setPet] = useState(null);
+  
+  useEffect(() => {
+    loadPetData();
+  }, [petId]);
+  
+  const loadPetData = async () => {
+    try {
+      const response = await PetsAPI.listMine();
+      const pets = response.data;
+      const currentPet = pets.find(p => p.id === petId) || pets[0];
+      setPet(currentPet);
+    } catch (error) {
+      console.error('Erro ao carregar pet:', error);
+    }
+  };
   
   const setA = (k,v)=> {
     setAnswers(prev => ({ ...prev, [k]: v }));
@@ -26,14 +42,30 @@ export default function HealthCheckScreen({ route }){
     setEvaluated(true);
     
     try {
-      // Chamar IA para diagnóstico
+      // Preparar dados do pet para enviar à IA
+      const petName = pet?.name || 'seu pet';
+      const petSpecies = pet?.species || 'animal de estimação';
+      const petBreed = pet?.breed || '';
+      const petAge = pet?.age || '';
+      
+      // Criar informações adicionais sobre o pet
+      let additionalInfo = '';
+      if (petBreed) additionalInfo += `Raça: ${petBreed}. `;
+      if (petAge) additionalInfo += `Idade: ${petAge} anos. `;
+      if (pet?.weight) additionalInfo += `Peso: ${pet.weight}kg. `;
+      if (pet?.allergies && pet.allergies !== 'Nenhuma') {
+        additionalInfo += `Alergias conhecidas: ${pet.allergies}. `;
+      }
+      
+      // Chamar IA para diagnóstico com dados personalizados do pet
       const response = await AIAPI.diagnose({
         eating_normally: answers.eat === 'yes' ? 'yes' : answers.eat === 'no' ? 'no' : 'maybe',
         energy_level: answers.energy,
         vomit_diarrhea: answers.vomit,
         pain_signs: answers.pain,
-        pet_name: 'seu pet',
-        pet_species: 'animal de estimação'
+        pet_name: petName,
+        pet_species: petSpecies,
+        additional_info: additionalInfo
       });
       
       setAiDiagnosis(response.data.diagnosis);
@@ -48,19 +80,19 @@ export default function HealthCheckScreen({ route }){
       if(score <= 1) {
         Alert.alert(
           '🟢 Parece estar tudo bem', 
-          'Seu pet não apresenta sinais graves. Continue monitorando e repita a verificação amanhã se necessário.',
+          `${pet?.name || 'Seu pet'} não apresenta sinais graves. Continue monitorando e repita a verificação amanhã se necessário.`,
           [{ text: 'OK' }]
         );
       } else if(score === 2) {
         Alert.alert(
           '🟡 Atenção recomendada', 
-          'Observe seu pet nas próximas 24 horas. Considere iniciar o Diário de Recuperação para acompanhar a evolução.',
+          `Observe ${pet?.name || 'seu pet'} nas próximas 24 horas. Considere iniciar o Diário de Recuperação para acompanhar a evolução.`,
           [{ text: 'OK' }]
         );
       } else {
         Alert.alert(
           '🔴 Consulte um veterinário', 
-          'Os sinais indicam que seu pet pode precisar de avaliação profissional. Recomendamos procurar um veterinário o quanto antes.',
+          `Os sinais de ${pet?.name || 'seu pet'} indicam que pode precisar de avaliação profissional. Recomendamos procurar um veterinário o quanto antes.`,
           [{ text: 'Entendi' }]
         );
       }
@@ -80,35 +112,52 @@ export default function HealthCheckScreen({ route }){
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>🏥 Check-up com IA</Text>
-        <Text style={styles.subtitle}>Avaliação inteligente de saúde do seu pet</Text>
+        <Text style={styles.subtitle}>
+          {pet ? `Avaliação de saúde para ${pet.name}` : 'Avaliação inteligente de saúde'}
+        </Text>
       </View>
+
+      {/* Pet Info Card */}
+      {pet && (
+        <View style={styles.petInfoCard}>
+          <Text style={styles.petInfoIcon}>🐾</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.petInfoName}>{pet.name}</Text>
+            <Text style={styles.petInfoDetails}>
+              {pet.species}{pet.breed ? ` • ${pet.breed}` : ''}{pet.age ? ` • ${pet.age} anos` : ''}
+            </Text>
+          </View>
+        </View>
+      )}
 
       {/* Info Card */}
       <View style={styles.infoCard}>
         <Text style={styles.infoIcon}>🤖</Text>
         <View style={{ flex: 1 }}>
-          <Text style={styles.infoTitle}>Diagnóstico com IA</Text>
+          <Text style={styles.infoTitle}>Diagnóstico Personalizado com IA</Text>
           <Text style={styles.infoText}>
-            Responda as perguntas e receba uma avaliação detalhada gerada por Inteligência Artificial. 
-            Este diagnóstico não substitui uma consulta veterinária presencial.
+            {pet ? `A IA analisará os sintomas de ${pet.name} ` : 'A IA analisará os sintomas '}
+            considerando suas características específicas para fornecer uma avaliação mais precisa e humanizada.
           </Text>
         </View>
       </View>
 
       {/* Questions */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Responda as perguntas:</Text>
+        <Text style={styles.sectionTitle}>
+          Como está {pet?.name || 'seu pet'} hoje?
+        </Text>
         
         <QuestionBlock 
           number="1"
-          question="Ele está comendo normalmente?" 
+          question={`${pet?.name || 'Ele'} está comendo normalmente?`}
           answer={answers.eat}
           onSelect={(v)=> setA('eat', v)} 
         />
         
         <QuestionBlock 
           number="2"
-          question="Está mais quieto ou apático que o normal?" 
+          question={`${pet?.name || 'Ele'} está mais quieto ou apático que o normal?`}
           answer={answers.energy}
           onSelect={(v)=> setA('energy', v)} 
         />
@@ -138,10 +187,14 @@ export default function HealthCheckScreen({ route }){
           {loading ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
               <ActivityIndicator color="#fff" />
-              <Text style={styles.evaluateButtonText}>Analisando com IA...</Text>
+              <Text style={styles.evaluateButtonText}>
+                Analisando {pet?.name || 'seu pet'}...
+              </Text>
             </View>
           ) : (
-            <Text style={styles.evaluateButtonText}>🤖 Obter Diagnóstico com IA</Text>
+            <Text style={styles.evaluateButtonText}>
+              🤖 Obter Diagnóstico Personalizado
+            </Text>
           )}
         </TouchableOpacity>
         
@@ -158,7 +211,7 @@ export default function HealthCheckScreen({ route }){
         <View style={{ flex: 1 }}>
           <Text style={styles.helpTitle}>Dica importante</Text>
           <Text style={styles.helpText}>
-            Se você perceber mudanças súbitas no comportamento ou sinais de desconforto intenso, 
+            {pet ? `Se ${pet.name} apresentar` : 'Se seu pet apresentar'} mudanças súbitas no comportamento ou sinais de desconforto intenso, 
             procure um veterinário imediatamente, mesmo que a avaliação da IA indique baixo risco.
           </Text>
         </View>
@@ -174,7 +227,10 @@ export default function HealthCheckScreen({ route }){
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>🤖 Diagnóstico IA</Text>
+              <View>
+                <Text style={styles.modalTitle}>🤖 Diagnóstico para {pet?.name || 'seu pet'}</Text>
+                <Text style={styles.modalSubtitle}>Análise personalizada com IA</Text>
+              </View>
               <TouchableOpacity onPress={() => setShowModal(false)}>
                 <Text style={styles.modalClose}>✕</Text>
               </TouchableOpacity>
