@@ -144,6 +144,9 @@ const styles = StyleSheet.create({
     color: '#6b7280',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#fff',
     padding: 20,
     paddingTop: 24,
@@ -160,11 +163,27 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#6b7280',
   },
+  addButton: {
+    backgroundColor: '#8b5cf6',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#1f2937',
     marginBottom: 12,
+  },
+  actionSubtitle: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 16,
   },
   petSection: {
     padding: 16,
@@ -173,6 +192,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#e5e7eb',
+    gap: 12,
   },
   noPetCard: {
     backgroundColor: '#fff',
