@@ -387,6 +387,388 @@ def test_api_health():
         print(f"❌ API health check failed: {e}")
         return False
 
+def get_auth_token():
+    """Get authentication token for testing"""
+    print("\n=== Getting Authentication Token ===")
+    
+    # Try to login with test credentials
+    login_data = {
+        "username": "test@petid.com",
+        "password": "testpass123"
+    }
+    
+    try:
+        response = requests.post(
+            f"{BASE_URL}/auth/login",
+            data=login_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            token = data.get("access_token")
+            print("✅ Successfully obtained auth token")
+            return token
+        elif response.status_code == 401:
+            print("⚠️ Test user not found, creating new user...")
+            # Try to register test user
+            register_data = {
+                "email": "test@petid.com",
+                "password": "testpass123"
+            }
+            
+            register_response = requests.post(
+                f"{BASE_URL}/auth/register",
+                json=register_data,
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            if register_response.status_code == 200:
+                print("✅ Test user created, logging in...")
+                # Try login again
+                login_response = requests.post(
+                    f"{BASE_URL}/auth/login",
+                    data=login_data,
+                    headers={"Content-Type": "application/x-www-form-urlencoded"},
+                    timeout=10
+                )
+                
+                if login_response.status_code == 200:
+                    data = login_response.json()
+                    token = data.get("access_token")
+                    print("✅ Successfully obtained auth token after registration")
+                    return token
+                else:
+                    print(f"❌ Login failed after registration: {login_response.status_code}")
+                    return None
+            else:
+                print(f"❌ User registration failed: {register_response.status_code}")
+                print(f"Response: {register_response.text}")
+                return None
+        else:
+            print(f"❌ Login failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Auth request failed: {e}")
+        return None
+
+def get_or_create_test_pet(token):
+    """Get existing pet or create a test pet for vaccine testing"""
+    print("\n=== Getting Test Pet ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    try:
+        # First, try to get existing pets
+        response = requests.get(
+            f"{BASE_URL}/pets",
+            headers=headers,
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            pets = response.json()
+            if pets:
+                pet_id = pets[0]["id"]
+                pet_name = pets[0]["name"]
+                print(f"✅ Using existing pet: {pet_name} (ID: {pet_id})")
+                return pet_id
+            else:
+                print("No existing pets found, creating test pet...")
+        else:
+            print(f"Failed to get pets: {response.status_code}")
+            print("Creating test pet...")
+        
+        # Create a test pet
+        pet_data = {
+            "name": "Luna",
+            "species": "cachorro",
+            "breed": "Golden Retriever",
+            "age": 2,
+            "birthdate": "2022-01-15",
+            "weight": 25.5
+        }
+        
+        create_response = requests.post(
+            f"{BASE_URL}/pets",
+            json=pet_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        if create_response.status_code == 200:
+            pet = create_response.json()
+            pet_id = pet["id"]
+            print(f"✅ Created test pet: {pet['name']} (ID: {pet_id})")
+            return pet_id
+        else:
+            print(f"❌ Failed to create test pet: {create_response.status_code}")
+            print(f"Response: {create_response.text}")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Pet request failed: {e}")
+        return None
+
+def test_put_vaccines(token, pet_id):
+    """Test PUT /pets/{pet_id}/vaccines endpoint"""
+    print("\n=== Testing PUT /pets/{pet_id}/vaccines ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    # Sample vaccine data as specified in the review request
+    vaccines_data = [
+        {
+            "id": "vacc_001",
+            "name": "V10",
+            "description": "Vacina múltipla",
+            "ageRecommendation": "2 meses",
+            "frequency": "Anual",
+            "priority": "essential",
+            "applied": False
+        },
+        {
+            "id": "vacc_002", 
+            "name": "Antirrábica",
+            "description": "Proteção contra raiva",
+            "ageRecommendation": "4 meses",
+            "frequency": "Anual",
+            "priority": "essential",
+            "applied": True
+        }
+    ]
+    
+    try:
+        response = requests.put(
+            f"{BASE_URL}/pets/{pet_id}/vaccines",
+            json=vaccines_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ PUT vaccines endpoint working!")
+            
+            # Verify response includes updated pet with vaccines
+            if "vaccines" in data and len(data["vaccines"]) == 2:
+                print(f"✅ Response includes {len(data['vaccines'])} vaccines")
+                
+                # Check vaccine data
+                for i, vaccine in enumerate(data["vaccines"]):
+                    expected = vaccines_data[i]
+                    if (vaccine["id"] == expected["id"] and 
+                        vaccine["name"] == expected["name"] and
+                        vaccine["applied"] == expected["applied"]):
+                        print(f"✅ Vaccine {i+1} data correct: {vaccine['name']}")
+                    else:
+                        print(f"⚠️ Vaccine {i+1} data mismatch")
+                
+                return True, data["vaccines"]
+            else:
+                print(f"❌ Expected 2 vaccines, got {len(data.get('vaccines', []))}")
+                return False, None
+        else:
+            print(f"❌ PUT vaccines failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ PUT vaccines request failed: {e}")
+        return False, None
+
+def test_get_pets_verify_persistence(token, pet_id):
+    """Test GET /pets to verify vaccine persistence"""
+    print("\n=== Testing GET /pets (Verify Persistence) ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    try:
+        response = requests.get(
+            f"{BASE_URL}/pets",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            pets = response.json()
+            
+            # Find our test pet
+            test_pet = None
+            for pet in pets:
+                if pet["id"] == pet_id:
+                    test_pet = pet
+                    break
+            
+            if test_pet:
+                vaccines = test_pet.get("vaccines", [])
+                if len(vaccines) >= 2:
+                    print(f"✅ Vaccines persisted correctly: {len(vaccines)} vaccines found")
+                    
+                    # Check specific vaccines
+                    v10_found = any(v["name"] == "V10" for v in vaccines)
+                    antirrabica_found = any(v["name"] == "Antirrábica" for v in vaccines)
+                    
+                    if v10_found and antirrabica_found:
+                        print("✅ Expected vaccines (V10, Antirrábica) found in persistence")
+                        return True, vaccines
+                    else:
+                        print("⚠️ Expected vaccines not found in persistence")
+                        return False, vaccines
+                else:
+                    print(f"❌ Expected at least 2 vaccines, found {len(vaccines)}")
+                    return False, vaccines
+            else:
+                print("❌ Test pet not found in pets list")
+                return False, None
+        else:
+            print(f"❌ GET pets failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ GET pets request failed: {e}")
+        return False, None
+
+def test_patch_vaccine_toggle(token, pet_id, vaccine_id):
+    """Test PATCH /pets/{pet_id}/vaccines/{vaccine_id} endpoint"""
+    print(f"\n=== Testing PATCH /pets/{pet_id}/vaccines/{vaccine_id} ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    # Test toggling applied status to true
+    try:
+        response = requests.patch(
+            f"{BASE_URL}/pets/{pet_id}/vaccines/{vaccine_id}?applied=true",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code (applied=true): {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ PATCH vaccine (applied=true) working!")
+            
+            # Find the updated vaccine
+            vaccines = data.get("vaccines", [])
+            target_vaccine = None
+            for vaccine in vaccines:
+                if vaccine["id"] == vaccine_id:
+                    target_vaccine = vaccine
+                    break
+            
+            if target_vaccine and target_vaccine["applied"] == True:
+                print(f"✅ Vaccine {vaccine_id} marked as applied")
+                
+                # Test toggling back to false
+                response2 = requests.patch(
+                    f"{BASE_URL}/pets/{pet_id}/vaccines/{vaccine_id}?applied=false",
+                    headers=headers,
+                    timeout=10
+                )
+                
+                print(f"Status Code (applied=false): {response2.status_code}")
+                
+                if response2.status_code == 200:
+                    data2 = response2.json()
+                    vaccines2 = data2.get("vaccines", [])
+                    target_vaccine2 = None
+                    for vaccine in vaccines2:
+                        if vaccine["id"] == vaccine_id:
+                            target_vaccine2 = vaccine
+                            break
+                    
+                    if target_vaccine2 and target_vaccine2["applied"] == False:
+                        print(f"✅ Vaccine {vaccine_id} unmarked as applied")
+                        return True
+                    else:
+                        print(f"❌ Failed to unmark vaccine {vaccine_id}")
+                        return False
+                else:
+                    print(f"❌ PATCH vaccine (applied=false) failed: {response2.status_code}")
+                    return False
+            else:
+                print(f"❌ Vaccine {vaccine_id} not marked as applied")
+                return False
+        else:
+            print(f"❌ PATCH vaccine failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ PATCH vaccine request failed: {e}")
+        return False
+
+def test_vaccine_error_cases(token):
+    """Test error cases for vaccine endpoints"""
+    print("\n=== Testing Vaccine Error Cases ===")
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    results = {"non_existent_pet": False, "no_auth": False}
+    
+    # Test 1: Non-existent pet (should return 404)
+    fake_pet_id = "507f1f77bcf86cd799439011"  # Valid ObjectId format but non-existent
+    vaccines_data = [
+        {
+            "id": "vacc_test",
+            "name": "Test Vaccine",
+            "description": "Test",
+            "ageRecommendation": "Test",
+            "frequency": "Test",
+            "priority": "essential",
+            "applied": False
+        }
+    ]
+    
+    try:
+        response = requests.put(
+            f"{BASE_URL}/pets/{fake_pet_id}/vaccines",
+            json=vaccines_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Non-existent pet test - Status Code: {response.status_code}")
+        
+        if response.status_code == 404:
+            print("✅ Correctly returned 404 for non-existent pet")
+            results["non_existent_pet"] = True
+        else:
+            print(f"❌ Expected 404, got {response.status_code}")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Non-existent pet test failed: {e}")
+    
+    # Test 2: No auth token (should return 401)
+    try:
+        response = requests.put(
+            f"{BASE_URL}/pets/{fake_pet_id}/vaccines",
+            json=vaccines_data,
+            timeout=10  # No headers (no auth)
+        )
+        
+        print(f"No auth test - Status Code: {response.status_code}")
+        
+        if response.status_code == 401:
+            print("✅ Correctly returned 401 for missing auth token")
+            results["no_auth"] = True
+        else:
+            print(f"❌ Expected 401, got {response.status_code}")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ No auth test failed: {e}")
+    
+    return results
+
 def main():
     """Run all backend tests"""
     print("🧪 Starting PetID Backend API Tests")
