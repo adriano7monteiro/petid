@@ -2,7 +2,7 @@
 // A URL externa agora está funcionando!
 
 // Para usar remotamente (backend na nuvem):
-export const API_URL = 'https://bc739a2b-2d9f-4ed8-9396-e19b2f4d3508.preview.emergentagent.com/api';
+export const API_URL = 'https://paws-health-4.preview.emergentagent.com/api';
 
 // Para usar localmente (quando backend está na sua máquina):
 // export const API_URL = 'http://localhost:8001/api';
