@@ -1,14 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from openai import OpenAI
-import os
+from app.core.config import get_settings
 
 router = APIRouter()
 
 # Função para obter cliente OpenAI (lazy initialization)
 def get_openai_client():
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
+    settings = get_settings()
+    api_key = settings.OPENAI_API_KEY
+    
+    if not api_key or api_key == "":
         raise HTTPException(
             status_code=500,
             detail="OPENAI_API_KEY não configurada. Configure no arquivo .env"
