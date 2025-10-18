@@ -19,6 +19,14 @@ def get_user_id_from_token(token: str) -> str:
         raise HTTPException(status_code=401, detail="Token inválido")
 
 def normalize_pet(doc) -> PetOut:
+    # Normalizar vacinas - converter id para string se necessário
+    vaccines = doc.get("vaccines", [])
+    normalized_vaccines = []
+    for vaccine in vaccines:
+        if vaccine.get("id") is not None:
+            vaccine["id"] = str(vaccine["id"])
+        normalized_vaccines.append(vaccine)
+    
     return {
         "id": str(doc["_id"]),
         "name": doc["name"],
@@ -30,7 +38,7 @@ def normalize_pet(doc) -> PetOut:
         "allergies": doc.get("allergies"),
         "photo": doc.get("photo"),
         "owner_id": str(doc["owner_id"]),
-        "vaccines": doc.get("vaccines", []),
+        "vaccines": normalized_vaccines,
     }
 
 @router.post("", response_model=PetOut)
