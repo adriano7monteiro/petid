@@ -36,6 +36,11 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage]  # Histórico da conversa
     new_message: str  # Nova pergunta do usuário
 
+class VaccineRequest(BaseModel):
+    pet_species: str
+    pet_breed: str = ""
+    pet_age: str = ""
+
 @router.post("/ai-diagnosis")
 async def ai_diagnosis(request: HealthCheckRequest):
     """
