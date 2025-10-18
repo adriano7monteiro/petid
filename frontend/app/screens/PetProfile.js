@@ -132,6 +132,26 @@ export default function PetProfile({ route }){
         <Text style={styles.subtitle}>Informações detalhadas e carteirinha digital</Text>
       </View>
 
+      {/* Foto do Pet */}
+      <View style={styles.photoSection}>
+        <View style={styles.photoContainer}>
+          {petImage ? (
+            <Image source={{ uri: petImage }} style={styles.petPhoto} />
+          ) : (
+            <View style={styles.photoPlaceholder}>
+              <Text style={styles.photoPlaceholderIcon}>🐾</Text>
+              <Text style={styles.photoPlaceholderText}>Sem foto</Text>
+            </View>
+          )}
+          <TouchableOpacity 
+            style={styles.photoButton} 
+            onPress={showImagePickerOptions}
+          >
+            <Text style={styles.photoButtonText}>📸 {petImage ? 'Alterar Foto' : 'Adicionar Foto'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* Informações Básicas */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
