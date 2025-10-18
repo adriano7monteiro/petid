@@ -1167,6 +1167,11 @@ def main():
         status = "✅ PASS" if success else "❌ FAIL"
         print(f"  {test_name.replace('_', ' ').title()}: {status}")
     
+    print("\n🗑️ DELETE PET TESTS:")
+    for test_name, success in delete_pet_tests.items():
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
     print("\n🤖 AI ENDPOINT TESTS:")
     for test_name, success in ai_tests.items():
         status = "✅ PASS" if success else "❌ FAIL"
