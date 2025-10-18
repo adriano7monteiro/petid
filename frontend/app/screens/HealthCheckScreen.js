@@ -124,6 +124,45 @@ export default function HealthCheckScreen({ route }){
     setAdditionalInfo('');
     setEvaluated(false);
     setAiDiagnosis(null);
+    setChatMessages([]);
+    setFollowUpQuestion('');
+  };
+  
+  const sendFollowUpQuestion = async () => {
+    if (!followUpQuestion.trim()) {
+      return;
+    }
+    
+    const userMessage = followUpQuestion.trim();
+    setFollowUpQuestion('');
+    setSendingMessage(true);
+    
+    // Adicionar mensagem do usuário ao chat
+    const updatedMessages = [...chatMessages, { role: 'user', content: userMessage }];
+    setChatMessages(updatedMessages);
+    
+    try {
+      const petName = pet?.name || 'seu pet';
+      const petSpecies = pet?.species || 'animal de estimação';
+      
+      const response = await AIAPI.chat({
+        pet_name: petName,
+        pet_species: petSpecies,
+        messages: updatedMessages,
+        new_message: userMessage
+      });
+      
+      // Adicionar resposta da IA ao chat
+      setChatMessages([...updatedMessages, { role: 'assistant', content: response.data.response }]);
+      
+    } catch (error) {
+      console.error('Erro ao enviar pergunta:', error);
+      Alert.alert('Erro', 'Não foi possível enviar sua pergunta. Tente novamente.');
+      // Remover a mensagem do usuário em caso de erro
+      setChatMessages(chatMessages);
+    } finally {
+      setSendingMessage(false);
+    }
   };
   
   return (
