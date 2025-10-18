@@ -119,6 +119,18 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ TESTED SUCCESSFULLY: /api/ai-chat endpoint working perfectly. Tested with conversation context, maintains chat history, provides contextually relevant responses in Portuguese. Also verified /api/ai-diagnosis endpoint still works correctly. Both endpoints are public (no auth required) and handle OpenAI integration properly."
+  
+  - task: "Create /api/suggest-vaccines endpoint for AI vaccine suggestions"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/app/routes/ai.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created endpoint that uses OpenAI to suggest vaccines based on pet species, breed, and age. Returns JSON with vaccine name, description, age recommendation, frequency, and priority (essential/recommended). Maximum 8 vaccines suggested."
 
 frontend:
   - task: "Update HealthCheckScreen to display chat interface"
