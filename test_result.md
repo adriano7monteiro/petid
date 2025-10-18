@@ -153,7 +153,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Create /api/ai-chat endpoint for interactive chat"
     - "Update HealthCheckScreen to display chat interface"
     - "Add chat API function"
   stuck_tasks: []
