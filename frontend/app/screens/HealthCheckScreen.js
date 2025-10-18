@@ -109,6 +109,7 @@ export default function HealthCheckScreen({ route }){
   
   const reset = () => {
     setAnswers({ eat:null, energy:null, vomit:null, pain:null });
+    setAdditionalInfo('');
     setEvaluated(false);
     setAiDiagnosis(null);
   };
