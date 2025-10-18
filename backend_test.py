@@ -197,6 +197,172 @@ def test_ai_chat_conversation_context():
         print(f"❌ Unexpected error: {e}")
         return False
 
+def test_suggest_vaccines_full_data():
+    """Test the /api/suggest-vaccines endpoint with full pet data"""
+    print("\n=== Testing /api/suggest-vaccines endpoint (Full Data) ===")
+    
+    # Test data as specified in the requirements
+    test_data = {
+        "pet_species": "cachorro",
+        "pet_breed": "Golden Retriever", 
+        "pet_age": "2 anos"
+    }
+    
+    try:
+        response = requests.post(
+            f"{BASE_URL}/suggest-vaccines",
+            json=test_data,
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        print(f"Response Headers: {dict(response.headers)}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ Vaccine suggestion endpoint working!")
+            print(f"Success: {data.get('success', 'N/A')}")
+            
+            vaccines = data.get('vaccines', [])
+            if vaccines:
+                print(f"Number of vaccines returned: {len(vaccines)}")
+                
+                # Check maximum 8 vaccines
+                if len(vaccines) <= 8:
+                    print("✅ Vaccine count within limit (≤8)")
+                else:
+                    print(f"⚠️ Too many vaccines returned: {len(vaccines)} (should be ≤8)")
+                
+                # Validate vaccine structure
+                valid_vaccines = 0
+                for i, vaccine in enumerate(vaccines[:3]):  # Check first 3 for brevity
+                    required_fields = ['name', 'description', 'ageRecommendation', 'frequency', 'priority']
+                    has_all_fields = all(field in vaccine for field in required_fields)
+                    
+                    if has_all_fields:
+                        valid_vaccines += 1
+                        priority = vaccine.get('priority', '')
+                        if priority in ['essential', 'recommended']:
+                            print(f"✅ Vaccine {i+1}: {vaccine['name']} - {priority}")
+                        else:
+                            print(f"⚠️ Vaccine {i+1}: Invalid priority '{priority}' (should be 'essential' or 'recommended')")
+                    else:
+                        missing = [f for f in required_fields if f not in vaccine]
+                        print(f"❌ Vaccine {i+1}: Missing fields: {missing}")
+                
+                if valid_vaccines > 0:
+                    print(f"✅ {valid_vaccines} vaccines have valid structure")
+                    return True
+                else:
+                    print("❌ No vaccines have valid structure")
+                    return False
+            else:
+                print("❌ No vaccines returned")
+                return False
+        else:
+            print(f"❌ Vaccine suggestion failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Request failed: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        return False
+
+def test_suggest_vaccines_minimal_data():
+    """Test the /api/suggest-vaccines endpoint with minimal data (species only)"""
+    print("\n=== Testing /api/suggest-vaccines endpoint (Minimal Data) ===")
+    
+    # Test with only species
+    test_data = {
+        "pet_species": "cachorro"
+    }
+    
+    try:
+        response = requests.post(
+            f"{BASE_URL}/suggest-vaccines",
+            json=test_data,
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ Vaccine suggestion with minimal data working!")
+            
+            vaccines = data.get('vaccines', [])
+            if vaccines:
+                print(f"Number of vaccines returned: {len(vaccines)}")
+                print(f"Sample vaccine: {vaccines[0].get('name', 'N/A')}")
+                return True
+            else:
+                print("❌ No vaccines returned with minimal data")
+                return False
+        else:
+            print(f"❌ Vaccine suggestion with minimal data failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Request failed: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        return False
+
+def test_suggest_vaccines_different_species():
+    """Test the /api/suggest-vaccines endpoint with different species (cat)"""
+    print("\n=== Testing /api/suggest-vaccines endpoint (Different Species) ===")
+    
+    # Test with cat
+    test_data = {
+        "pet_species": "gato",
+        "pet_breed": "Persa",
+        "pet_age": "1 ano"
+    }
+    
+    try:
+        response = requests.post(
+            f"{BASE_URL}/suggest-vaccines",
+            json=test_data,
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ Vaccine suggestion for cats working!")
+            
+            vaccines = data.get('vaccines', [])
+            if vaccines:
+                print(f"Number of vaccines returned for cat: {len(vaccines)}")
+                
+                # Check if vaccines seem appropriate for cats (basic check)
+                cat_vaccines = [v['name'] for v in vaccines if v.get('name')]
+                print(f"Cat vaccines: {', '.join(cat_vaccines[:3])}...")
+                return True
+            else:
+                print("❌ No vaccines returned for cats")
+                return False
+        else:
+            print(f"❌ Vaccine suggestion for cats failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Request failed: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        return False
+
 def test_api_health():
     """Test basic API health"""
     print("\n=== Testing API Health ===")
