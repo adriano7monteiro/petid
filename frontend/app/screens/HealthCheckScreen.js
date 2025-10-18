@@ -1,67 +1,96 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { AIAPI } from '../../services/api';
 
-export default function HealthCheckScreen(){
+export default function HealthCheckScreen({ route }){
+  const { petId } = route.params || {};
   const [answers, setAnswers] = useState({ eat:null, energy:null, vomit:null, pain:null });
   const [evaluated, setEvaluated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [aiDiagnosis, setAiDiagnosis] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
   const setA = (k,v)=> {
     setAnswers(prev => ({ ...prev, [k]: v }));
     setEvaluated(false);
   };
   
-  const evaluate = ()=>{
+  const evaluate = async ()=>{
     const unanswered = Object.values(answers).filter(v => v === null).length;
     if(unanswered > 0) {
       Alert.alert('⚠️ Atenção', 'Por favor, responda todas as perguntas antes de avaliar.');
       return;
     }
     
-    const score = Object.values(answers).reduce((acc, v)=> acc + (v==='yes'?1:0), 0);
+    setLoading(true);
     setEvaluated(true);
     
-    if(score <= 1) {
-      Alert.alert(
-        '🟢 Parece estar tudo bem', 
-        'Seu pet não apresenta sinais graves. Continue monitorando e repita a verificação amanhã se necessário.',
-        [{ text: 'OK' }]
-      );
-    } else if(score === 2) {
-      Alert.alert(
-        '🟡 Atenção recomendada', 
-        'Observe seu pet nas próximas 24 horas. Considere iniciar o Diário de Recuperação para acompanhar a evolução.',
-        [{ text: 'OK' }]
-      );
-    } else {
-      Alert.alert(
-        '🔴 Consulte um veterinário', 
-        'Os sinais indicam que seu pet pode precisar de avaliação profissional. Recomendamos procurar um veterinário o quanto antes.',
-        [{ text: 'Entendi' }]
-      );
+    try {
+      // Chamar IA para diagnóstico
+      const response = await AIAPI.diagnose({
+        eating_normally: answers.eat === 'yes' ? 'yes' : answers.eat === 'no' ? 'no' : 'maybe',
+        energy_level: answers.energy,
+        vomit_diarrhea: answers.vomit,
+        pain_signs: answers.pain,
+        pet_name: 'seu pet',
+        pet_species: 'animal de estimação'
+      });
+      
+      setAiDiagnosis(response.data.diagnosis);
+      setShowModal(true);
+      
+    } catch (error) {
+      console.error('Erro ao obter diagnóstico:', error);
+      
+      // Fallback para avaliação manual
+      const score = Object.values(answers).reduce((acc, v)=> acc + (v==='yes'?1:0), 0);
+      
+      if(score <= 1) {
+        Alert.alert(
+          '🟢 Parece estar tudo bem', 
+          'Seu pet não apresenta sinais graves. Continue monitorando e repita a verificação amanhã se necessário.',
+          [{ text: 'OK' }]
+        );
+      } else if(score === 2) {
+        Alert.alert(
+          '🟡 Atenção recomendada', 
+          'Observe seu pet nas próximas 24 horas. Considere iniciar o Diário de Recuperação para acompanhar a evolução.',
+          [{ text: 'OK' }]
+        );
+      } else {
+        Alert.alert(
+          '🔴 Consulte um veterinário', 
+          'Os sinais indicam que seu pet pode precisar de avaliação profissional. Recomendamos procurar um veterinário o quanto antes.',
+          [{ text: 'Entendi' }]
+        );
+      }
+    } finally {
+      setLoading(false);
     }
   };
   
   const reset = () => {
     setAnswers({ eat:null, energy:null, vomit:null, pain:null });
     setEvaluated(false);
+    setAiDiagnosis(null);
   };
   
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>🏥 Check-up Rápido</Text>
-        <Text style={styles.subtitle}>Avalie o estado de saúde do seu pet</Text>
+        <Text style={styles.title}>🏥 Check-up com IA</Text>
+        <Text style={styles.subtitle}>Avaliação inteligente de saúde do seu pet</Text>
       </View>
 
       {/* Info Card */}
       <View style={styles.infoCard}>
-        <Text style={styles.infoIcon}>ℹ️</Text>
+        <Text style={styles.infoIcon}>🤖</Text>
         <View style={{ flex: 1 }}>
-          <Text style={styles.infoTitle}>Como funciona?</Text>
+          <Text style={styles.infoTitle}>Diagnóstico com IA</Text>
           <Text style={styles.infoText}>
-            Responda as perguntas abaixo e receba uma orientação sobre o estado do seu pet. 
-            Esta ferramenta não substitui uma consulta veterinária.
+            Responda as perguntas e receba uma avaliação detalhada gerada por Inteligência Artificial. 
+            Este diagnóstico não substitui uma consulta veterinária presencial.
           </Text>
         </View>
       </View>
@@ -101,11 +130,22 @@ export default function HealthCheckScreen(){
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.evaluateButton} onPress={evaluate}>
-          <Text style={styles.evaluateButtonText}>🔍 Avaliar Agora</Text>
+        <TouchableOpacity 
+          style={[styles.evaluateButton, loading && styles.evaluateButtonDisabled]} 
+          onPress={evaluate}
+          disabled={loading}
+        >
+          {loading ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+              <ActivityIndicator color="#fff" />
+              <Text style={styles.evaluateButtonText}>Analisando com IA...</Text>
+            </View>
+          ) : (
+            <Text style={styles.evaluateButtonText}>🤖 Obter Diagnóstico com IA</Text>
+          )}
         </TouchableOpacity>
         
-        {evaluated && (
+        {evaluated && !loading && (
           <TouchableOpacity style={styles.resetButton} onPress={reset}>
             <Text style={styles.resetButtonText}>🔄 Nova Avaliação</Text>
           </TouchableOpacity>
@@ -119,10 +159,42 @@ export default function HealthCheckScreen(){
           <Text style={styles.helpTitle}>Dica importante</Text>
           <Text style={styles.helpText}>
             Se você perceber mudanças súbitas no comportamento ou sinais de desconforto intenso, 
-            procure um veterinário imediatamente, mesmo que a avaliação indique baixo risco.
+            procure um veterinário imediatamente, mesmo que a avaliação da IA indique baixo risco.
           </Text>
         </View>
       </View>
+
+      {/* Modal de Diagnóstico */}
+      <Modal
+        visible={showModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>🤖 Diagnóstico IA</Text>
+              <TouchableOpacity onPress={() => setShowModal(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalBody}>
+              <Text style={styles.diagnosisText}>{aiDiagnosis}</Text>
+            </ScrollView>
+            
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.modalButton} 
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.modalButtonText}>Entendi</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -203,13 +275,13 @@ const styles = StyleSheet.create({
     color: '#6b7280',
   },
   infoCard: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: '#ede9fe',
     marginHorizontal: 16,
     marginTop: 16,
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#93c5fd',
+    borderColor: '#c4b5fd',
     flexDirection: 'row',
     gap: 12,
     alignItems: 'flex-start',
@@ -220,12 +292,12 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1e40af',
+    color: '#5b21b6',
     marginBottom: 4,
   },
   infoText: {
     fontSize: 13,
-    color: '#1e3a8a',
+    color: '#6b21a8',
     lineHeight: 18,
   },
   section: {
@@ -255,7 +327,7 @@ const styles = StyleSheet.create({
   questionNumber: {
     width: 28,
     height: 28,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#8b5cf6',
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
@@ -302,9 +374,12 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   evaluateButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#8b5cf6',
     padding: 16,
     borderRadius: 10,
+  },
+  evaluateButtonDisabled: {
+    backgroundColor: '#9ca3af',
   },
   evaluateButtonText: {
     color: '#fff',
@@ -350,5 +425,59 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#78350f',
     lineHeight: 18,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1f2937',
+  },
+  modalClose: {
+    fontSize: 28,
+    color: '#6b7280',
+    fontWeight: '300',
+  },
+  modalBody: {
+    padding: 20,
+    maxHeight: 400,
+  },
+  diagnosisText: {
+    fontSize: 15,
+    color: '#374151',
+    lineHeight: 24,
+  },
+  modalFooter: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+  },
+  modalButton: {
+    backgroundColor: '#8b5cf6',
+    padding: 16,
+    borderRadius: 10,
+  },
+  modalButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '700',
+    fontSize: 16,
   },
 });
