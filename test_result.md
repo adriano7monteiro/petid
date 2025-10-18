@@ -120,6 +120,18 @@ backend:
         agent: "testing"
         comment: "✅ TESTED SUCCESSFULLY: /api/ai-chat endpoint working perfectly. Tested with conversation context, maintains chat history, provides contextually relevant responses in Portuguese. Also verified /api/ai-diagnosis endpoint still works correctly. Both endpoints are public (no auth required) and handle OpenAI integration properly."
   
+  - task: "Add endpoint to delete pet"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/app/routes/pets.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added DELETE /pets/{pet_id} endpoint. Verifies pet belongs to user before deletion. Returns success message after deletion."
+  
   - task: "Create /api/suggest-vaccines endpoint for AI vaccine suggestions"
     implemented: true
     working: true
