@@ -201,6 +201,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Added AI-powered vaccine suggestions. Users can request vaccine recommendations based on pet's species, breed, and age. Can mark vaccines as applied, remove vaccines from list. Shows vaccine details, age recommendations, frequency, and priority badges for essential vaccines."
+      - working: "NA"
+        agent: "main"
+        comment: "Vaccines now load automatically on page load if species is available. Saves vaccines to database automatically. When marking vaccine as applied or removing vaccine, changes are saved to database. Button text changes to 'Novas Sugestões' when vaccines exist. Confirmation alert before replacing existing vaccines."
 
 metadata:
   created_by: "main_agent"
