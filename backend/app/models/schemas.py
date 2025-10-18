@@ -19,12 +19,24 @@ class PetIn(BaseModel):
     species: str
     breed: Optional[str] = None
     age: Optional[int] = None
+    birthdate: Optional[str] = None
     weight: Optional[float] = None
     allergies: Optional[str] = None
+    photo: Optional[str] = None
+
+class VaccineData(BaseModel):
+    id: str
+    name: str
+    description: str
+    ageRecommendation: str
+    frequency: str
+    priority: str
+    applied: bool = False
 
 class PetOut(PetIn):
     id: str
     owner_id: str
+    vaccines: Optional[List[VaccineData]] = []
 
 class DiaryEntryIn(BaseModel):
     pet_id: str
